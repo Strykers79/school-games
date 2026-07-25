@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мої ігри — інформатика</title>
+<style>
+  :root{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;--accent:#f2994a;--accent-strong:#e07f28;
+    --good:#2fb98a;--shadow:rgba(27,58,92,.16);--sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;--accent:#ffab5e;--accent-strong:#ffbe7f;--good:#3fd6a0;--shadow:rgba(0,0,0,.5);
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:var(--sans);color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%,var(--bg2),var(--bg1));padding:24px 16px 48px}
+  .wrap{max-width:820px;margin:0 auto}
+  header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  h1{font-size:clamp(24px,5vw,34px);color:var(--navy);margin:0;letter-spacing:-.01em;display:flex;align-items:center;gap:12px}
+  h1 .em{font-size:1.1em}
+  .lede{color:var(--dim);margin:6px 0 22px;font-size:clamp(15px,2.4vw,17px)}
+  .who{margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:999px;
+    padding:8px 14px;font-size:14px;color:var(--navy);box-shadow:0 2px 0 var(--border-2);display:flex;align-items:center;gap:8px}
+  .who button{appearance:none;border:0;background:transparent;color:var(--accent-strong);font-weight:700;cursor:pointer;font-family:inherit;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .game{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;overflow:hidden;box-shadow:0 16px 40px -30px var(--shadow),0 2px 0 var(--border-2);transition:transform .15s,box-shadow .15s}
+  .game:hover{transform:translateY(-3px);box-shadow:0 22px 44px -26px var(--shadow),0 2px 0 var(--border-2)}
+  .game .cover{height:120px;display:grid;place-items:center;font-size:56px;background:linear-gradient(135deg,var(--surface-2),color-mix(in srgb,var(--accent) 16%,var(--surface-2)))}
+  .game .body{padding:14px 16px 16px}
+  .game h3{margin:0 0 4px;color:var(--navy);font-size:18px}
+  .game .tag{display:inline-block;font-size:12px;font-weight:700;color:var(--accent-strong);
+    background:color-mix(in srgb,var(--accent) 16%,transparent);padding:3px 9px;border-radius:999px;margin-bottom:8px}
+  .game p{margin:0;color:var(--dim);font-size:14px;line-height:1.4}
+  .soon{opacity:.55;pointer-events:none}
+  .soon .cover{filter:grayscale(.6)}
+  footer{color:var(--faint);font-size:13px;text-align:center;margin-top:30px}
+</style>
+<script src="config.js"></script>
+<script src="stats.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1><span class="em">🎮</span> Мої ігри</h1>
+      <div class="who" id="who" hidden>👤 <span id="whoName"></span> <button id="whoChange">змінити</button></div>
+    </header>
+    <p class="lede">Обери гру, виконай завдання й отримай оцінку. Твій результат побачить учитель.</p>
+
+    <div class="grid">
+      <a class="game" href="games/naved-lad.html">
+        <div class="cover">🗂️</div>
+        <div class="body">
+          <span class="tag">5 клас · ОС, файли та папки</span>
+          <h3>Наведи лад</h3>
+          <p>Допоможи роботу Біту: розклади файли, обери правильні імена, розберись із Кошиком.</p>
+        </div>
+      </a>
+
+      <div class="game soon">
+        <div class="cover">➕</div>
+        <div class="body">
+          <span class="tag">незабаром</span>
+          <h3>Нова гра</h3>
+          <p>Тут з'являться наступні ігри до інших тем.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer>Навчальні ігри з інформатики</footer>
+  </div>
+
+  <script>
+    (function(){
+      function paint(){
+        var s = window.SchoolGame && window.SchoolGame.student && window.SchoolGame.student();
+        var who=document.getElementById("who");
+        if (s && s.name){ document.getElementById("whoName").textContent = s.name; who.hidden=false; }
+        else who.hidden=true;
+      }
+      document.getElementById("whoChange").onclick=function(){
+        if (window.SchoolGame) window.SchoolGame.resetStudent();
+        location.reload();
+      };
+      window.addEventListener("load", function(){ setTimeout(paint, 300); });
+    })();
+  </script>
+</body>
+</html>
