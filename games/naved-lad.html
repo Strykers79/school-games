@@ -147,8 +147,20 @@
 
   footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
 </style>
-<script src="../config.js"></script>
-<script src="../stats.js"></script>
+<script src="../supabase-config.js"></script>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  window.submitResult = async function(score){
+    try{
+      const play = JSON.parse(sessionStorage.getItem('play')||'null');
+      if(!play || !play.code) return { ok:false, error:'no session' };
+      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
+      if(error) return { ok:false, error: error.message };
+      return data;
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+</script>
 </head>
 <body>
 <div class="app">
@@ -177,6 +189,9 @@
 <script>
 (() => {
   "use strict";
+  const PLAY = (()=>{ try{ return JSON.parse(sessionStorage.getItem('play')||'null'); }catch(e){ return null; } })();
+  if(!PLAY || PLAY.game_slug !== 'naved-lad'){ location.replace('../index.html'); return; }
+  (function(){ var s0=document.getElementById('say'); if(s0) s0.innerHTML='\u041f\u0440\u0438\u0432\u0456\u0442, <b>'+(PLAY.student_name||'\u0434\u0440\u0443\u0436\u0435')+'</b>! \u042f \u0440\u043e\u0431\u043e\u0442 \u0411\u0456\u0442. \u0414\u043e\u043f\u043e\u043c\u043e\u0436\u0438 \u043d\u0430\u0432\u0435\u0441\u0442\u0438 \u043b\u0430\u0434. \u0421\u043f\u0440\u043e\u0431 \u043b\u0438\u0448\u0438\u043b\u043e\u0441\u044c: <b>'+(PLAY.remaining!=null?PLAY.remaining:'?')+'</b>.'; })();
   const $ = id => document.getElementById(id);
   const stage=$("stage"), say=$("say"), nextBtn=$("next"), starsEl=$("stars"), dotsEl=$("dots");
   let stars=0, round=0;
@@ -358,29 +373,43 @@
     dotsEl.querySelectorAll("i").forEach(d=>d.className="done");
     document.querySelector(".card .actions").style.display="none";
     const MAX=17;
-    let res=null;
-    try{ if(window.SchoolGame) res=window.SchoolGame.submit("naved-lad", stars, MAX); }catch(e){}
-    const grade = res ? res.grade : Math.max(1, Math.round(1+11*stars/MAX));
-    const attempt = res ? res.attempt : 1;
-    const canRetry = attempt < 2;
-    say.innerHTML="Ти навів лад у моєму комп'ютері! Молодець! \uD83C\uDF89";
-    stage.innerHTML=`<div class="win">
-      <div class="big">\uD83C\uDFC6</div>
-      <h2>Лад наведено!</h2>
-      <div class="score">\u2B50 ${stars} / ${MAX} зірок</div>
-      <div class="score" style="color:var(--good)">Оцінка: ${grade} / 12</div>
-      <p>${canRetry ? "У тебе є ще одна спроба — можеш покращити результат." : "Спроби використано. Учителю зараховано найкращий результат."}</p>
-      ${canRetry ? '<button class="btn" id="again">Спробувати ще раз \u21BA</button>' : '<button class="btn ghost" id="home">До інших ігор \u21A9</button>'}
-    </div>`;
-    const again=$("again");
-    if(again) again.onclick=()=>{ stars=0; round=0; starsEl.textContent=0;
-      document.querySelector(".card .actions").style.display="flex";
-      nextBtn.textContent="Почати →"; nextBtn.disabled=false; paintDots();
-      say.innerHTML="Друга спроба — покажи максимум! \uD83D\uDE80"; stage.innerHTML=""; };
-    const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    const localGrade = Math.max(1, Math.round(1+11*stars/MAX));
+    say.innerHTML="\u0417\u0431\u0435\u0440\u0456\u0433\u0430\u044e \u0442\u0432\u0456\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u2026 \u23F3";
+    stage.innerHTML='<div class="win"><div class="big">\u23F3</div><h2>\u0420\u0430\u0445\u0443\u0454\u043c\u043e \u043e\u0446\u0456\u043d\u043a\u0443\u2026</h2></div>';
+    const finish = (grade, remaining, note) => {
+      const canRetry = remaining > 0;
+      say.innerHTML="\u0422\u0438 \u043d\u0430\u0432\u0456\u0432 \u043b\u0430\u0434 \u0443 \u043a\u043e\u043c\u043f'\u044e\u0442\u0435\u0440\u0456 \u0411\u0456\u0442\u0430! \u041c\u043e\u043b\u043e\u0434\u0435\u0446\u044c! \uD83C\uDF89";
+      stage.innerHTML=`<div class="win">
+        <div class="big">\uD83C\uDFC6</div>
+        <h2>\u041b\u0430\u0434 \u043d\u0430\u0432\u0435\u0434\u0435\u043d\u043e!</h2>
+        <div class="score">\u2B50 ${stars} / ${MAX}</div>
+        <div class="score" style="color:var(--good)">\u041e\u0446\u0456\u043d\u043a\u0430: ${grade} / 12</div>
+        <p>${note}</p>
+        ${canRetry ? '<button class="btn" id="again">\u0421\u043f\u0440\u043e\u0431\u0443\u0432\u0430\u0442\u0438 \u0449\u0435 \u0440\u0430\u0437 \u21BA</button>' : '<button class="btn ghost" id="home">\u0412\u0438\u0439\u0442\u0438 \u21A9</button>'}
+      </div>`;
+      const again=$("again"); if(again) again.onclick=()=>{ stars=0; round=0; starsEl.textContent=0;
+        document.querySelector(".card .actions").style.display="flex";
+        nextBtn.textContent="\u041f\u043e\u0447\u0430\u0442\u0438 \u2192"; nextBtn.disabled=false; paintDots();
+        say.innerHTML="\u0429\u0435 \u0441\u043f\u0440\u043e\u0431\u0430 \u2014 \u043f\u043e\u043a\u0430\u0436\u0438 \u043c\u0430\u043a\u0441\u0438\u043c\u0443\u043c! \uD83D\uDE80"; stage.innerHTML=""; };
+      const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    };
+    if(window.submitResult){
+      window.submitResult(stars).then(res=>{
+        if(res && res.ok){
+          finish(res.grade, (res.remaining!=null?res.remaining:0),
+            (res.remaining>0 ? ("\u0417\u0430\u043b\u0438\u0448\u0438\u043b\u043e\u0441\u044c \u0441\u043f\u0440\u043e\u0431: "+res.remaining+" \u2014 \u043c\u043e\u0436\u0435\u0448 \u043f\u043e\u043a\u0440\u0430\u0449\u0438\u0442\u0438.") : "\u0421\u043f\u0440\u043e\u0431\u0438 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u043d\u043e. \u0417\u0430\u0440\u0430\u0445\u043e\u0432\u0430\u043d\u043e \u043d\u0430\u0439\u043a\u0440\u0430\u0449\u0438\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442."));
+        } else if(res && res.error && /\u0432\u0438\u0447\u0435\u0440\u043f\u0430\u043d\u043e/i.test(res.error)){
+          finish(localGrade, 0, "\u0422\u0438 \u0432\u0436\u0435 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u0432 \u0443\u0441\u0456 \u0441\u043f\u0440\u043e\u0431\u0438.");
+        } else {
+          finish(localGrade, 0, "\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u0431\u0435\u0440\u0435\u0433\u0442\u0438 \u2014 \u043f\u043e\u043a\u0430\u0436\u0438 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u0443\u0447\u0438\u0442\u0435\u043b\u044e.");
+        }
+      }).catch(()=>finish(localGrade,0,"\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u0431\u0435\u0440\u0435\u0433\u0442\u0438 \u2014 \u043f\u043e\u043a\u0430\u0436\u0438 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u0443\u0447\u0438\u0442\u0435\u043b\u044e."));
+    } else {
+      finish(localGrade, 0, "\u0414\u0435\u043c\u043e-\u0440\u0435\u0436\u0438\u043c.");
+    }
   }
 
-  // ═══════════════ Керування раундами ═══════════════
+  // \u2550\u2550\u2550 \u041a\u0435\u0440\u0443\u0432\u0430\u043d\u043d\u044f \u0440\u0430\u0443\u043d\u0434\u0430\u043c\u0438 ═══════════════
   const rounds=[round1,round2,round3,round4];
   function lockNext(){ nextBtn.disabled=true; nextBtn.textContent="Виконуй завдання…"; }
   function done(){ nextBtn.disabled=false; nextBtn.textContent = round<TOTAL_ROUNDS-1 ? "Далі →" : "Фінал 🏁"; }
