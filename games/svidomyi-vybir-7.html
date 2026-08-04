@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Свідомий вибір: інструмент і налаштування під задачу — гра для 7 класу</title>
+<meta name="description" content="Підсумкова робота ГР 3 (7 клас): що дає хмарний сервіс, вибір інструмента для звуку, коли розгалуження потрібне, керування показом презентації, маршрут показу під аудиторію.">
+<style>
+  :root {
+    --bg1:#dfe9f5; --bg2:#eef4fb;
+    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
+    --navy:#1b3a5c; --navy-soft:#3a5a7d;
+    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
+    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
+    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
+    --star:#ffc043;
+    --shadow:rgba(27,58,92,.16);
+    --r:18px;
+    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
+      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
+      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
+      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
+      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a; --star:#ffcf5c;
+      --shadow:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
+    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
+    --bad:#ea6b6b;--star:#ffc043;--shadow:rgba(27,58,92,.16);
+  }
+  :root[data-theme="dark"]{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
+    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
+    --bad:#ff8a8a;--star:#ffcf5c;--shadow:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
+    display:flex; align-items:flex-start; justify-content:center; padding:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%; max-width:860px}
+
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+  .logo{font-weight:800; font-size:clamp(20px,4.5vw,28px); color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .spacer{flex:1}
+  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
+    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
+  .stars b{color:var(--accent-strong)}
+  .dots{display:flex; gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
+  .dots i.on{background:var(--accent)}
+  .dots i.done{background:var(--good)}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
+  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
+    display:flex; gap:14px; align-items:center}
+  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
+  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
+  .bubble b{color:var(--accent-strong)}
+  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
+  .stage{padding:20px 18px 22px}
+  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
+
+  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:64px}
+  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
+    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
+  .tile .ic{font-size:22px; line-height:1}
+  .tile:hover{border-color:var(--accent)}
+  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
+  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
+  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+  .tile .num{flex:none; width:24px;height:24px;border-radius:50%; background:var(--good); color:#fff; font-size:13px; display:grid; place-items:center}
+
+  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
+    padding:14px 12px 12px; width:160px; text-align:center; transition:.15s}
+  .folder:hover{border-color:var(--accent)}
+  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .folder.hit{animation:pop .3s}
+  .folder.nope{animation:shake .3s}
+  .folder .fic{font-size:38px; line-height:1}
+  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px; font-size:15px}
+  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
+
+  .ops{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+  .op{cursor:pointer; font-family:inherit; font-weight:800; font-size:15px; color:var(--navy);
+    background:var(--surface); border:2px solid var(--border); border-radius:999px; padding:11px 18px; transition:.15s}
+  .op:hover{border-color:var(--accent)}
+  .op:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .op.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .op.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface)); animation:shake .3s}
+  .prompt{background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:16px; text-align:center;
+    font-size:clamp(16px,3vw,20px); font-weight:700; color:var(--ink); margin-bottom:16px}
+
+  .actions{display:flex; justify-content:center; margin-top:20px}
+  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
+    padding:13px 26px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
+  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
+  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:0 5px 0 var(--accent-strong)}
+  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
+
+  .win{text-align:center; padding:30px 18px 34px}
+  .win .big{font-size:64px; line-height:1}
+  .win h2{color:var(--navy); font-size:clamp(22px,5vw,30px); margin:10px 0 4px}
+  .win p{color:var(--dim); font-size:17px; margin:0 0 8px}
+  .win .score{font-size:26px; font-weight:800; color:var(--accent-strong); margin:8px 0 18px}
+
+  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
+  .flash.go{animation:flash .7s}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
+</style>
+<script src="../supabase-config.js"></script>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  window.submitResult = async function(score){
+    try{
+      const play = JSON.parse(sessionStorage.getItem('play')||'null');
+      if(!play || !play.code) return { ok:false, error:'no session' };
+      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
+      if(error) return { ok:false, error: error.message };
+      return data;
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><span class="dot"></span>Свідомий вибір</div>
+    <div class="spacer"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stars">⭐ <b id="stars">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="bit" aria-hidden="true">🧭</div>
+      <div class="bubble" id="say">Це підсумкова робота ГР 3. П'ять раундів про вибір: інструмент і налаштування під задачу.</div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="actions" style="padding:0 18px 22px">
+      <button class="btn" id="next">Почати →</button>
+    </div>
+  </div>
+
+  <footer>Підсумкова робота ГР 3 · «Свідомий вибір» · 7 клас · уроки 5, 8, 12, 13</footer>
+</div>
+<div class="flash" id="flash" aria-hidden="true">⭐</div>
+
+<script>
+(() => {
+  "use strict";
+  const PLAY = (()=>{ try{ return JSON.parse(sessionStorage.getItem('play')||'null'); }catch(e){ return null; } })();
+  if(!PLAY || PLAY.game_slug !== 'svidomyi-vybir-7'){ location.replace('../index.html'); return; }
+  (function(){ var s0=document.getElementById('say'); if(s0) s0.innerHTML=
+    'Привіт, <b>'+(PLAY.student_name||'\u0434\u0440\u0443\u0436\u0435')+'</b>! Це <b>підсумкова робота ГР 3</b> \u2014 усвідомлене користування технологіями. '
+    +'П\u2019ять раундів: хмарні сервіси, вибір інструмента для звуку, розгалуження в презентації, керування показом і маршрут під аудиторію. '
+    +'⚠️ Робота за <b>три теми</b> семестру, але тут <b>немає означень і обчислень</b> \u2014 є <b>рішення</b>. '
+    +'Кожна помилкова спроба знімає зірочку. Спроб лишилось: <b>'+(PLAY.remaining!=null?PLAY.remaining:'?')+'</b>.'; })();
+
+  const $ = id => document.getElementById(id);
+  const stage=$("stage"), say=$("say"), nextBtn=$("next"), starsEl=$("stars"), dotsEl=$("dots");
+  let stars=0, round=0, mistakes=0;
+  const TOTAL_ROUNDS=5;
+  const MAX=26; // 4 + 6 + 6 + 4 + 6
+
+  for(let i=0;i<TOTAL_ROUNDS;i++){const d=document.createElement("i"); dotsEl.appendChild(d);}
+  const paintDots=()=>{[...dotsEl.children].forEach((d,i)=>{d.className = i<round?"done":(i===round?"on":"");});};
+
+  const addStar = (n=1) => {
+    stars+=n; starsEl.textContent=stars;
+    const f=$("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+  };
+  const bit = html => { say.innerHTML=html; };
+  const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+
+  // ── Раунд «розклади по папках» ──
+  function sortRound(cfg){
+    bit(cfg.hint);
+    let sel=null, left=cfg.items.length;
+    stage.innerHTML=`<p class="task">${cfg.task}</p>
+      <div class="pool" id="pool"></div>
+      <div class="targets" id="targets"></div>`;
+    const pool=$("pool"), targets=$("targets");
+    shuffle(cfg.items.slice()).forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="230px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{ if(b.classList.contains("gone"))return;
+        [...pool.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+        sel=it; sel.el=b;
+        bit(`Обрано: <b>${it.n}</b>. ${cfg.pick}`); };
+      pool.appendChild(b);
+    });
+    const counts={}; cfg.folders.forEach(f=>counts[f.name]=0);
+    cfg.folders.forEach(f=>{
+      const d=document.createElement("div"); d.className="folder"; d.tabIndex=0; d.setAttribute("role","button");
+      d.innerHTML=`<div class="fic">${f.ic}</div><div class="fname">${f.name}</div><div class="cnt">0</div>`;
+      const act=()=>{
+        if(!sel){ bit("Спочатку торкнись <b>картки</b>, потім папки \u{1F642}"); d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300); return; }
+        if(sel.f===f.name){
+          sel.el.classList.add("gone"); counts[f.name]++; d.querySelector(".cnt").textContent=counts[f.name];
+          d.classList.add("hit"); setTimeout(()=>d.classList.remove("hit"),300);
+          addStar(); left--; sel=null;
+          if(left===0){ bit(cfg.win); done(); } else bit("Правильно! \u{1F44D} Далі?");
+        } else {
+          d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300);
+          mistakes++; bit(`Подумай ще: <b>${sel.n}</b> \u2014 точно сюди?`);
+        }
+      };
+      d.onclick=act; d.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}};
+      targets.appendChild(d);
+    });
+    lockNext();
+  }
+
+  // ── Раунд «познач правильні» ──
+  function pickRound(cfg){
+    bit(cfg.hint);
+    let found=0; const total=cfg.items.filter(x=>x.ok).length;
+    stage.innerHTML=`<p class="task">${cfg.task}</p><div class="pool" id="pool"></div>`;
+    const pool=$("pool");
+    shuffle(cfg.items.slice()).forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="250px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{
+        if(b.dataset.done)return;
+        if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
+          bit("Так, правильно \u2705"); if(found===total){ bit(cfg.win); done(); } }
+        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні \u2014 ${it.s}.`); }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═══════════ РАУНД 1 — Хмарні сервіси (урок 5) ═══════════
+  function round1(){
+    pickRound({
+      task:"Познач ЧОТИРИ речі, які справді дає хмарний сервіс \u2601",
+      hint:"Правильних \u2014 <b>чотири</b>. Три інші \u2014 те, чого хмара НЕ робить. Читай уважно.",
+      win:"Раунд 1 пройдено. Ти знаєш, за що хмара, а за що ні \u2601",
+      items:[
+        {n:"Доступ до файлів із будь-якого пристрою, де є твій акаунт", ic:"\u2705", ok:true},
+        {n:"Синхронізація: змінив на телефоні \u2014 змінилося й на ноутбуці", ic:"\u2705", ok:true},
+        {n:"Не треба встановлювати програму \u2014 працює в браузері", ic:"\u2705", ok:true},
+        {n:"Кілька людей можуть працювати з одним документом", ic:"\u2705", ok:true},
+        {n:"Файли зберігаються тільки на твоєму комп\u2019ютері", ic:"\u2753", ok:false,
+         s:"навпаки: вони на <b>сервері постачальника</b>. Саме тому й доступні з інших пристроїв"},
+        {n:"Працює без Інтернету так само добре", ic:"\u2753", ok:false,
+         s:"⚠️ без Інтернету доступ <b>обмежений</b>. Це головна ціна хмари"},
+        {n:"Місце в хмарі безмежне й завжди безкоштовне", ic:"\u2753", ok:false,
+         s:"безкоштовний обсяг <b>обмежений</b> \u2014 далі за місце платять"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 2 — Інструмент для звуку (урок 8) ═══════════
+  function round2(){
+    sortRound({
+      task:"Чим це зробити зі звуком? \u{1F3A7}",
+      hint:"Спершу торкнись <b>картки</b> із задачею, потім \u2014 інструмента. Правило: бери <b>найпростіший інструмент із достатніх</b>.",
+      pick:"Найпростіший достатній інструмент \u2014 який?",
+      win:"Раунд 2 пройдено. Ти не запускаєш редактор там, де досить сайту \u{1F3AF}",
+      folders:[
+        {name:"Онлайн-сервіс", ic:"\u{1F310}"},
+        {name:"Редактор доріжок", ic:"\u{1F39B}"}
+      ],
+      items:[
+        {n:"Вирізати фрагмент із середини пісні", ic:"\u2702", f:"Онлайн-сервіс"},
+        {n:"Склеїти чотири записи один за одним", ic:"\u{1F517}", f:"Онлайн-сервіс"},
+        {n:"Обрізати тишу на початку й у кінці запису", ic:"\u2704", f:"Онлайн-сервіс"},
+        {n:"Накласти свій голос ПОВЕРХ фонової музики", ic:"\u{1F399}", f:"Редактор доріжок"},
+        {n:"Зробити музику тихішою там, де говорить голос", ic:"\u{1F508}", f:"Редактор доріжок"},
+        {n:"Прибрати шум із записаного голосу", ic:"\u{1F32C}", f:"Редактор доріжок"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 3 — Коли розгалуження потрібне (урок 12) ═══════════
+  function round3(){
+    sortRound({
+      task:"Чи потрібне тут розгалуження (меню й посилання)? \u{1F500}",
+      hint:"Головне питання: <b>а що, якщо глядач захоче подивитися інакше?</b> Немає такого питання \u2014 немає й розгалуження.",
+      pick:"Розгалуження тут потрібне чи зайве?",
+      win:"Раунд 3 пройдено. Це найважливіший раунд роботи \u{1F31F}",
+      folders:[
+        {name:"Потрібне", ic:"\u2705"},
+        {name:"Зайве",    ic:"\u{1F6AB}"}
+      ],
+      items:[
+        {n:"Довідник для шкільної бібліотеки: відкривають самі, без тебе", ic:"\u{1F4D6}", f:"Потрібне"},
+        {n:"Презентація-тест зі слайдами «Правильно» і «Помилка»", ic:"\u2753", f:"Потрібне"},
+        {n:"Презентація для самостійного вивчення теми", ic:"\u{1F393}", f:"Потрібне"},
+        {n:"Твій виступ на 5 хвилин перед класом за планом", ic:"\u{1F5E3}", f:"Зайве"},
+        {n:"Розповідь «Один день із життя козака»: від ранку до вечора", ic:"\u{1F305}", f:"Зайве"},
+        {n:"Посилання «щоб було» \u2014 натискати ти його не плануєш", ic:"\u{1F9F9}", f:"Зайве"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 4 — Керування показом (урок 13) ═══════════
+  function round4(){
+    pickRound({
+      task:"Познач ЧОТИРИ правильні твердження про керування показом \u25B6",
+      hint:"Правильних \u2014 <b>чотири</b>. Три інші звучать переконливо, але <b>неправильні</b>.",
+      win:"Раунд 4 пройдено. Показом керуєш ти, а не випадкове клацання \u25B6",
+      items:[
+        {n:"Кнопка «повернення» веде туди, ЗВІДКИ ти прийшов", ic:"\u2705", ok:true},
+        {n:"Кнопки дій \u2014 це графічні примітиви, тобто фігури", ic:"\u2705", ok:true},
+        {n:"Користувацький показ НЕ видаляє слайдів із файлу", ic:"\u2705", ok:true},
+        {n:"Заборонив зміну слайдів клацанням \u2014 на кожному слайді потрібна кнопка", ic:"\u2705", ok:true},
+        {n:"Кнопка «перейти на початок» веде на попередній слайд", ic:"\u2753", ok:false,
+         s:"вона веде на <b>перший</b> слайд. На попередній веде «повернутися назад»"},
+        {n:"Щоб показати різні набори слайдів, треба зробити копії файлу", ic:"\u2753", ok:false,
+         s:"⚠️ ні: <b>один файл</b> і кілька <b>користувацьких показів</b>. Слайди нікуди не зникають"},
+        {n:"Гіперпосилання й кнопки працюють і в режимі редагування", ic:"\u2753", ok:false,
+         s:"вони працюють у режимі <b>Показ слайдів</b> \u2014 натисни F5"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 5 — Маршрут під аудиторію (уроки 12–13) ═══════════
+  function round5(){
+    sortRound({
+      task:"Одна презентація \u2014 три ситуації. Кому цей маршрут? \u{1F5FA}",
+      hint:"Останній раунд. Питання не «як зробити маршрут», а <b>кому</b> він. Дивись на час і на те, чи будеш ти поруч.",
+      pick:"Для якої ситуації це рішення?",
+      win:"Усі п\u2019ять раундів пройдено! Тисни «Фінал» \u{1F3C1}",
+      folders:[
+        {name:"Виступ 2 хвилини", ic:"\u23F1"},
+        {name:"Дивляться самі",   ic:"\u{1F440}"},
+        {name:"Захист перед комісією", ic:"\u{1F396}"}
+      ],
+      items:[
+        {n:"Три-чотири найголовніші слайди, решта \u2014 поза маршрутом", ic:"\u2702", f:"Виступ 2 хвилини"},
+        {n:"Без меню й кнопок: я говорю за планом", ic:"\u{1F5E3}", f:"Виступ 2 хвилини"},
+        {n:"Слайд-меню й «\u27F5 до змісту» на кожному розділі", ic:"\u{1F9ED}", f:"Дивляться самі"},
+        {n:"Підказки на слайдах, бо мене поруч немає", ic:"\u{1F4A1}", f:"Дивляться самі"},
+        {n:"Слайд із витратами й числами результату", ic:"\u{1F4CA}", f:"Захист перед комісією"},
+        {n:"Повний набір слайдів разом зі слайдом «Джерела»", ic:"\u{1F4DA}", f:"Захист перед комісією"}
+      ]
+    });
+  }
+
+  // ═══════════════ Фінал ═══════════════
+  function finale(){
+    dotsEl.querySelectorAll("i").forEach(d=>d.className="done");
+    document.querySelector(".card .actions").style.display="none";
+    const earned = Math.max(0, MAX - mistakes);
+    const localGrade = Math.max(1, Math.round(1+11*earned/MAX));
+    say.innerHTML="Зберігаю твій результат\u2026 \u23f3";
+    stage.innerHTML='<div class="win"><div class="big">\u23f3</div><h2>Рахуємо оцінку\u2026</h2></div>';
+    const finish = (grade, remaining, note) => {
+      const canRetry = remaining > 0;
+      say.innerHTML="Підсумкову роботу ГР 3 завершено! \u{1F389}";
+      stage.innerHTML=`<div class="win">
+        <div class="big">\u{1F3C6}</div>
+        <h2>Готово!</h2>
+        <div class="score">\u2b50 ${earned} / ${MAX} (помилок: ${mistakes})</div>
+        <div class="score" style="color:var(--good)">Оцінка: ${grade} / 12</div>
+        <p>${note}</p>
+        <p style="opacity:.75;font-size:14px">Цей бал іде у свідоцтво досягнень за <b>ГР 3 \u2014 усвідомлене користування технологіями</b>.</p>
+        ${canRetry ? '<button class="btn" id="again">Спробувати ще раз \u21ba</button>' : '<button class="btn ghost" id="home">Вийти \u21a9</button>'}
+      </div>`;
+      const again=$("again"); if(again) again.onclick=()=>{ stars=0; round=0; mistakes=0; starsEl.textContent=0;
+        document.querySelector(".card .actions").style.display="flex";
+        nextBtn.textContent="Почати \u2192"; nextBtn.disabled=false; paintDots();
+        say.innerHTML="Ще спроба \u2014 цього разу читай уважніше \u{1F680}"; stage.innerHTML=""; };
+      const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    };
+    if(window.submitResult){
+      window.submitResult(earned).then(res=>{
+        if(res && res.ok){
+          finish(res.grade, (res.remaining!=null?res.remaining:0),
+            (res.remaining>0 ? ("Залишилось спроб: "+res.remaining+" \u2014 можеш покращити.") : "Спроби використано. Зараховано найкращий результат."));
+        } else if(res && res.error && /вичерпано/i.test(res.error)){
+          finish(localGrade, 0, "Ти вже використав усі спроби.");
+        } else {
+          finish(localGrade, 0, "Не вдалося зберегти \u2014 покажи результат учителю.");
+        }
+      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти \u2014 покажи результат учителю."));
+    } else {
+      finish(localGrade, 0, "Демо-режим.");
+    }
+  }
+
+  // ═══════════════ Керування раундами ═══════════════
+  const rounds=[round1,round2,round3,round4,round5];
+  function lockNext(){ nextBtn.disabled=true; nextBtn.textContent="Виконуй завдання\u2026"; }
+  function done(){ nextBtn.disabled=false; nextBtn.textContent = round<TOTAL_ROUNDS-1 ? "Далі \u2192" : "Фінал \u{1F3C1}"; }
+
+  nextBtn.onclick=()=>{
+    if(round>=TOTAL_ROUNDS){ return; }
+    if(nextBtn.textContent.startsWith("Почати") || nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")){
+      if(nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")) round++;
+      if(round>=TOTAL_ROUNDS){ finale(); return; }
+      paintDots(); rounds[round]();
+    }
+  };
+  paintDots();
+})();
+</script>
+</body>
+</html>

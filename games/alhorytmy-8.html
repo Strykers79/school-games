@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Алгоритми та програми: розгалуження й логіка — гра для 8 класу</title>
+<meta name="description" content="Підсумкова робота ГР 2 та ГР 3 (8 клас): яка форма розгалуження потрібна, or чи and, обчислення за моделлю, коли варто писати програму, логіка у фільтрах і пошуку.">
+<style>
+  :root {
+    --bg1:#dfe9f5; --bg2:#eef4fb;
+    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
+    --navy:#1b3a5c; --navy-soft:#3a5a7d;
+    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
+    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
+    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
+    --star:#ffc043;
+    --shadow:rgba(27,58,92,.16);
+    --r:18px;
+    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
+      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
+      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
+      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
+      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a; --star:#ffcf5c;
+      --shadow:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
+    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
+    --bad:#ea6b6b;--star:#ffc043;--shadow:rgba(27,58,92,.16);
+  }
+  :root[data-theme="dark"]{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
+    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
+    --bad:#ff8a8a;--star:#ffcf5c;--shadow:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
+    display:flex; align-items:flex-start; justify-content:center; padding:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%; max-width:860px}
+
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+  .logo{font-weight:800; font-size:clamp(20px,4.5vw,28px); color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .spacer{flex:1}
+  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
+    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
+  .stars b{color:var(--accent-strong)}
+  .dots{display:flex; gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
+  .dots i.on{background:var(--accent)}
+  .dots i.done{background:var(--good)}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
+  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
+    display:flex; gap:14px; align-items:center}
+  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
+  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
+  .bubble b{color:var(--accent-strong)}
+  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
+  .stage{padding:20px 18px 22px}
+  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
+
+  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:64px}
+  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
+    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
+  .tile .ic{font-size:22px; line-height:1}
+  .tile:hover{border-color:var(--accent)}
+  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
+  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
+  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+  .tile .num{flex:none; width:24px;height:24px;border-radius:50%; background:var(--good); color:#fff; font-size:13px; display:grid; place-items:center}
+  .tile code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace; font-size:.95em;
+    background:var(--surface-2); border:1px solid var(--border-2); border-radius:6px; padding:1px 5px}
+
+  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
+    padding:14px 12px 12px; width:170px; text-align:center; transition:.15s}
+  .folder:hover{border-color:var(--accent)}
+  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .folder.hit{animation:pop .3s}
+  .folder.nope{animation:shake .3s}
+  .folder .fic{font-size:38px; line-height:1}
+  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px; font-size:15px}
+  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
+
+  .qbox{background:var(--surface-2); border:1px solid var(--border-2); border-radius:var(--r);
+        padding:18px 16px; margin:0 0 6px; text-align:center}
+  .qnum{font-size:13px; color:var(--faint); letter-spacing:.04em; text-transform:uppercase;
+        font-weight:700; margin-bottom:8px}
+  .qtext{font-size:clamp(16px,3vw,20px); line-height:1.45; color:var(--ink); margin-bottom:16px}
+  .qtext code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace; font-size:1.05em;
+        background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2px 7px}
+  .qrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center}
+  .num-in{width:170px; font:800 26px/1 var(--sans); text-align:center; color:var(--ink);
+        background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:11px 12px}
+  .num-in:focus{outline:none; border-color:var(--accent)}
+  .num-in:disabled{opacity:.65}
+  .unit{font-weight:800; font-size:20px; color:var(--navy-soft)}
+  .verdict{min-height:26px; margin-top:14px; font-size:15px; line-height:1.4; color:var(--dim)}
+
+  .actions{display:flex; justify-content:center; margin-top:20px}
+  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
+    padding:13px 26px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
+  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
+  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:0 5px 0 var(--accent-strong)}
+  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
+
+  .win{text-align:center; padding:30px 18px 34px}
+  .win .big{font-size:64px; line-height:1}
+  .win h2{color:var(--navy); font-size:clamp(22px,5vw,30px); margin:10px 0 4px}
+  .win p{color:var(--dim); font-size:17px; margin:0 0 8px}
+  .win .score{font-size:26px; font-weight:800; color:var(--accent-strong); margin:8px 0 18px}
+
+  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
+  .flash.go{animation:flash .7s}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
+</style>
+<script src="../supabase-config.js"></script>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  window.submitResult = async function(score){
+    try{
+      const play = JSON.parse(sessionStorage.getItem('play')||'null');
+      if(!play || !play.code) return { ok:false, error:'no session' };
+      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
+      if(error) return { ok:false, error: error.message };
+      return data;
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><span class="dot"></span>Алгоритми та програми</div>
+    <div class="spacer"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stars">⭐ <b id="stars">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="bit" aria-hidden="true">🔀</div>
+      <div class="bubble" id="say">Це підсумкова робота ГР 2 та ГР 3. П'ять раундів: розгалуження, логічні операції та свідомі рішення.</div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="actions" style="padding:0 18px 22px">
+      <button class="btn" id="next">Почати →</button>
+    </div>
+  </div>
+
+  <footer>Підсумкова робота ГР 2 та ГР 3 · «Алгоритми та програми» · 8 клас · Тема 3, уроки 17–23</footer>
+</div>
+<div class="flash" id="flash" aria-hidden="true">⭐</div>
+
+<script>
+(() => {
+  "use strict";
+  const PLAY = (()=>{ try{ return JSON.parse(sessionStorage.getItem('play')||'null'); }catch(e){ return null; } })();
+  if(!PLAY || PLAY.game_slug !== 'alhorytmy-8'){ location.replace('../index.html'); return; }
+  (function(){ var s0=document.getElementById('say'); if(s0) s0.innerHTML=
+    'Привіт, <b>'+(PLAY.student_name||'друже')+'</b>! Це <b>підсумкова робота ГР 2 та ГР 3</b> за Темою 3. '
+    +'П’ять раундів: яка форма розгалуження потрібна, <code>or</code> чи <code>and</code>, чотири невеликі обчислення, '
+    +'коли варто писати програму і логіка у фільтрах та пошуку. '
+    +'⚠️ <b>Означень «за підручником» тут немає</b> — є <b>рішення</b> й <b>чотири задачі з числом</b>. '
+    +'Кожна помилкова спроба знімає зірочку. Спроб лишилось: <b>'+(PLAY.remaining!=null?PLAY.remaining:'?')+'</b>.'; })();
+
+  const $ = id => document.getElementById(id);
+  const stage=$("stage"), say=$("say"), nextBtn=$("next"), starsEl=$("stars"), dotsEl=$("dots");
+  let stars=0, round=0, mistakes=0;
+  const TOTAL_ROUNDS=5;
+  const MAX=26; // 6 + 6 + 4 + 6 + 4
+
+  for(let i=0;i<TOTAL_ROUNDS;i++){const d=document.createElement("i"); dotsEl.appendChild(d);}
+  const paintDots=()=>{[...dotsEl.children].forEach((d,i)=>{d.className = i<round?"done":(i===round?"on":"");});};
+
+  const addStar = (n=1) => {
+    stars+=n; starsEl.textContent=stars;
+    const f=$("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+  };
+  const bit = html => { say.innerHTML=html; };
+  const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+
+  // ── Раунд «розклади по папках» ──
+  function sortRound(cfg){
+    bit(cfg.hint);
+    let sel=null, left=cfg.items.length;
+    stage.innerHTML=`<p class="task">${cfg.task}</p>
+      <div class="pool" id="pool"></div>
+      <div class="targets" id="targets"></div>`;
+    const pool=$("pool"), targets=$("targets");
+    shuffle(cfg.items.slice()).forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="250px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{ if(b.classList.contains("gone"))return;
+        [...pool.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+        sel=it; sel.el=b;
+        bit(`Обрано: <b>${it.n}</b>. ${cfg.pick}`); };
+      pool.appendChild(b);
+    });
+    const counts={}; cfg.folders.forEach(f=>counts[f.name]=0);
+    cfg.folders.forEach(f=>{
+      const d=document.createElement("div"); d.className="folder"; d.tabIndex=0; d.setAttribute("role","button");
+      d.innerHTML=`<div class="fic">${f.ic}</div><div class="fname">${f.name}</div><div class="cnt">0</div>`;
+      const act=()=>{
+        if(!sel){ bit("Спочатку торкнись <b>картки</b>, потім папки \u{1F642}"); d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300); return; }
+        if(sel.f===f.name){
+          sel.el.classList.add("gone"); counts[f.name]++; d.querySelector(".cnt").textContent=counts[f.name];
+          d.classList.add("hit"); setTimeout(()=>d.classList.remove("hit"),300);
+          addStar(); left--; sel=null;
+          if(left===0){ bit(cfg.win); done(); } else bit("Правильно! \u{1F44D} Далі?");
+        } else {
+          d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300);
+          mistakes++; bit(`Подумай ще: <b>${sel.n}</b> — точно сюди?`);
+        }
+      };
+      d.onclick=act; d.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}};
+      targets.appendChild(d);
+    });
+    lockNext();
+  }
+
+  // ── Раунд «познач правильні» ──
+  function pickRound(cfg){
+    bit(cfg.hint);
+    let found=0; const total=cfg.items.filter(x=>x.ok).length;
+    stage.innerHTML=`<p class="task">${cfg.task}</p><div class="pool" id="pool"></div>`;
+    const pool=$("pool");
+    shuffle(cfg.items.slice()).forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="260px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{
+        if(b.dataset.done)return;
+        if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
+          bit("Так, правильно ✅"); if(found===total){ bit(cfg.win); done(); } }
+        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні — ${it.s}.`); }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ── Раунд із числовою відповіддю (завдання одне за одним) ──
+  function numRound(cfg){
+    bit(cfg.hint);
+    let i=0;
+    const render=()=>{
+      const it=cfg.items[i];
+      stage.innerHTML=`<p class="task">${cfg.task}</p>
+        <div class="qbox">
+          <div class="qnum">Завдання ${i+1} з ${cfg.items.length}</div>
+          <div class="qtext">${it.q}</div>
+          <div class="qrow">
+            <input class="num-in" id="ans" type="text" inputmode="text" autocomplete="off"
+                   placeholder="?" aria-label="Твоя відповідь">
+            ${it.u ? `<span class="unit">${it.u}</span>` : ``}
+            <button class="btn" id="chk">Перевірити</button>
+          </div>
+          <div class="verdict" id="vd">Уведи число й натисни «Перевірити» (або Enter).</div>
+        </div>`;
+      const inp=$("ans"), vd=$("vd"), chk=$("chk");
+      try{ inp.focus(); }catch(e){}
+      const check=()=>{
+        const raw=(inp.value||"").replace(/[\s ]/g,"").replace(",",".").replace("−","-");
+        if(raw===""){ vd.textContent="Спочатку введи число \u{1F642}"; return; }
+        const val=Number(raw);
+        if(!isFinite(val)){ vd.textContent="Це не схоже на число. Спробуй ще."; return; }
+        if(Math.abs(val-it.a) < 1e-6){
+          addStar();
+          vd.innerHTML='<b style="color:var(--good)">Правильно ✅</b>' + (it.ok?(" "+it.ok):"");
+          inp.disabled=true; chk.disabled=true;
+          i++;
+          if(i>=cfg.items.length){ bit(cfg.win); done(); }
+          else setTimeout(render, 1100);
+        } else {
+          mistakes++;
+          vd.innerHTML='<b style="color:var(--bad)">Ні.</b> ' + it.tip;
+          try{ inp.select(); }catch(e){}
+        }
+      };
+      chk.onclick=check;
+      inp.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); check(); } };
+    };
+    render(); lockNext();
+  }
+
+  // ═══════════ РАУНД 1 — ГР 2 · Яка форма розгалуження (уроки 18–21) ═══════════
+  function round1(){
+    sortRound({
+      task:"Яка форма розгалуження потрібна для цієї задачі? \u{1F500}",
+      hint:"Спершу торкнись <b>картки</b>, потім форми. Питання одне: <b>скільки різних варіантів</b> має результат?",
+      pick:"Скільки варіантів у результату — один, два чи три й більше?",
+      win:"Раунд 1 пройдено. Ти обираєш форму за кількістю варіантів \u{1F500}",
+      folders:[
+        {name:"if — коротка",         ic:"⤴"},
+        {name:"if…else — повна",  ic:"⇄"},
+        {name:"if…elif…else",     ic:"\u{1FA9C}"}
+      ],
+      items:[
+        {n:"Решта від’ємна — попередити. Інакше не робити нічого", ic:"⚠", f:"if — коротка"},
+        {n:"Поле порожнє — повідомити й вийти з обробника", ic:"\u{1F6E1}", f:"if — коротка"},
+        {n:"Вистачило грошей — зелений напис, не вистачило — червоний", ic:"\u{1F7E9}", f:"if…else — повна"},
+        {n:"Трикутник існує або не існує", ic:"\u{1F53A}", f:"if…else — повна"},
+        {n:"Бал → рівень: високий, достатній, середній, початковий", ic:"\u{1F4CA}", f:"if…elif…else"},
+        {n:"Вік → квиток: безкоштовний, дитячий, повний, пільговий", ic:"\u{1F39F}", f:"if…elif…else"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 2 — ГР 2 · or чи and (уроки 22–23) ═══════════
+  function round2(){
+    sortRound({
+      task:"Яку логічну операцію потрібно поставити в умову? \u{1F9E9}",
+      hint:"Правило з уроку 23: <b>дві окремі ділянки — or</b>, <b>один проміжок — and</b>. І перевірка: прочитай умову вголос як речення про <b>одне</b> число.",
+      pick:"or чи and?",
+      win:"Раунд 2 пройдено. Це головне вміння теми \u{1F31F}",
+      folders:[
+        {name:"or — диз’юнкція", ic:"\u{1F53C}"},
+        {name:"and — кон’юнкція", ic:"\u{1F53D}"}
+      ],
+      items:[
+        {n:"Бал неприпустимий: менший за 1 <b>або</b> більший за 12", ic:"\u{1F6AB}", f:"or — диз’юнкція"},
+        {n:"Температура небезпечна: нижче −20 <b>або</b> вище +35", ic:"\u{1F321}", f:"or — диз’юнкція"},
+        {n:"Хоч одне з трьох полів залишили порожнім", ic:"\u{1F573}", f:"or — диз’юнкція"},
+        {n:"Вода підходить для купання: від 20 до 28 °C", ic:"\u{1F30A}", f:"and — кон’юнкція"},
+        {n:"Трикутник існує: кожна сторона менша за суму двох інших", ic:"\u{1F53A}", f:"and — кон’юнкція"},
+        {n:"Пароль підходить за довжиною: від 8 до 20 символів", ic:"\u{1F511}", f:"and — кон’юнкція"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 3 — ГР 2 · Порахуй за моделлю (уроки 13, 17, 21, 23) ═══════════
+  function round3(){
+    numRound({
+      task:"Порахуй і впиши число \u{1F9EE}",
+      hint:"Чотири задачі одна за одною. Дробові пиши через <b>кому або точку</b> — приймається і так, і так. Мінус — звичайний.",
+      win:"Раунд 3 пройдено. Модель важливіша за код \u{1F9EE}",
+      items:[
+        {
+          q:"Проєкт рахує так: <code>if x < -3 or x > 5: y = 2*x - 12</code>, а <code>else: y = 7 - 8*x</code>.<br>Уводимо <b>x = −3</b>. Яке <b>y</b> покаже проєкт?",
+          a:31, u:"",
+          ok:"−3 <b>не менше</b> за −3, тому працює друга формула.",
+          tip:"Уважно: чи істинна умова <code>x < -3</code> при x = −3? Межа належить <b>другій</b> гілці."
+        },
+        {
+          q:"Мама дала Марійці <b>200 грн</b>. Треба купити <b>400 г</b> печива (кілограм — <b>150 грн</b>), <b>2</b> пакети молока по <b>32 грн</b> і хліб за <b>25 грн</b>.<br>Скільки <b>решти</b> залишиться?",
+          a:51, u:"грн",
+          ok:"0,4·150 + 2·32 + 25 = 149. Решта — 51 грн.",
+          tip:"400 г — це <b>0,4</b> кілограма, а не 400. Порахуй витрати окремо, потім відніми."
+        },
+        {
+          q:"У проєкті <code>elif</code>-ланцюжок із <b>чотирьох</b> гілок: 10–12, 7–9, 4–6, 1–3.<br>Скільки тестових наборів потрібно, щоб перевірити <b>кожну гілку</b> й <b>кожну межу</b>?",
+          a:7, u:"наборів",
+          ok:"Чотири гілки плюс три межі: 12, 10, 9, 7, 5, 3, 1.",
+          tip:"Порахуй: по одному на кожну гілку — це чотири. А тепер додай набори <b>на межах</b> між гілками."
+        },
+        {
+          q:"Депозит: <b>7 %</b> прибутку за <b>пів року</b>, і прибуток <b>додається до вкладу</b>.<br>Поклали <b>1000 грн</b>. Скільки грошей буде на рахунку <b>через рік</b>?",
+          a:1144.9, u:"грн",
+          ok:"1000·1,07·1,07 = 1144,9. Це 14,49 %, а не 14 %.",
+          tip:"За рік нарахують <b>двічі</b>, і другий раз — уже на збільшену суму. Множники <b>перемножуються</b>."
+        }
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 4 — ГР 3 · Коли варто писати програму (урок 17) ═══════════
+  function round4(){
+    sortRound({
+      task:"Тут варто написати проєкт — чи швидше без програми? \u{1F914}",
+      hint:"Програму варто писати, коли обчислення <b>повторюється багато разів</b>, дані <b>змінюються</b>, а формула — <b>та сама</b>. Один раз порахувати швидше руками.",
+      pick:"Варто писати проєкт чи ні?",
+      win:"Раунд 4 пройдено. Уміти <b>не</b> писати програму — теж уміння \u{1F3AF}",
+      folders:[
+        {name:"Варто написати проєкт", ic:"\u{1F4BB}"},
+        {name:"Швидше без програми",   ic:"✏"}
+      ],
+      items:[
+        {n:"Щомісяця рахувати оплату за електроенергію для 30 квартир", ic:"\u{1F4A1}", f:"Варто написати проєкт"},
+        {n:"Після кожної роботи рахувати відсоток виконаного для всього класу", ic:"\u{1F4C8}", f:"Варто написати проєкт"},
+        {n:"Перевірити 40 наборів із зошита: чи існує трикутник", ic:"\u{1F53A}", f:"Варто написати проєкт"},
+        {n:"Один раз перевести 5 кілограмів у грами", ic:"⚖", f:"Швидше без програми"},
+        {n:"Порахувати площу однієї кімнати, щоб купити лінолеум", ic:"\u{1F4D0}", f:"Швидше без програми"},
+        {n:"Скласти список покупок на вечерю", ic:"\u{1F6D2}", f:"Швидше без програми"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 5 — ГР 3 · Логіка у фільтрах і пошуку (урок 22) ═══════════
+  function round5(){
+    pickRound({
+      task:"Познач ЧОТИРИ правильні твердження про логіку в пошуку й фільтрах \u{1F50D}",
+      hint:"Останній раунд. Правильних — <b>чотири</b>. Три інші звучать переконливо, але <b>неправильні</b>.",
+      win:"Усі п’ять раундів пройдено! Тисни «Фінал» \u{1F3C1}",
+      items:[
+        {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів стає більше", ic:"✅", ok:true},
+        {n:"РІЗНІ фільтри з’єднані через and — результатів стає менше", ic:"✅", ok:true},
+        {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ic:"✅", ok:true},
+        {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ic:"✅", ok:true},
+        {n:"Чим більше галочок поставиш, тим більше знайдеш", ic:"❓", ok:false,
+         s:"⚠️ залежить, <b>де</b> галочка: у межах одного фільтра — більше, а <b>новий</b> фільтр — менше"},
+        {n:"Мінус перед словом у пошуку розширює пошук", ic:"❓", ok:false,
+         s:"навпаки: <code>-слово</code> — це <b>not</b>, воно <b>виключає</b> сторінки з цим словом"},
+        {n:"Галочка «Запам’ятати мене» на чужому комп’ютері безпечна, якщо закрити вкладку", ic:"❓", ok:false,
+         s:"⚠️ ні: ця логічна змінна лишається <b>True</b> і <b>після тебе</b> — разом із доступом до акаунта"}
+      ]
+    });
+  }
+
+  // ═══════════════ Фінал ═══════════════
+  function finale(){
+    dotsEl.querySelectorAll("i").forEach(d=>d.className="done");
+    document.querySelector(".card .actions").style.display="none";
+    const earned = Math.max(0, MAX - mistakes);
+    const localGrade = Math.max(1, Math.round(1+11*earned/MAX));
+    say.innerHTML="Зберігаю твій результат… ⏳";
+    stage.innerHTML='<div class="win"><div class="big">⏳</div><h2>Рахуємо оцінку…</h2></div>';
+    const finish = (grade, remaining, note) => {
+      const canRetry = remaining > 0;
+      say.innerHTML="Гру підсумкової роботи завершено! \u{1F389}";
+      stage.innerHTML=`<div class="win">
+        <div class="big">\u{1F3C6}</div>
+        <h2>Готово!</h2>
+        <div class="score">⭐ ${earned} / ${MAX} (помилок: ${mistakes})</div>
+        <div class="score" style="color:var(--good)">Оцінка за гру: ${grade} / 12</div>
+        <p>${note}</p>
+        <p style="opacity:.75;font-size:14px">Це <b>перша</b> частина роботи. Друга — твій <b>власний проєкт</b> за одинадцятьма вимогами.
+        Підсумковий бал за <b>ГР 2 та ГР 3</b> — це <b>середнє двох частин</b>, округлене вгору.</p>
+        ${canRetry ? '<button class="btn" id="again">Спробувати ще раз ↺</button>' : '<button class="btn ghost" id="home">Вийти ↩</button>'}
+      </div>`;
+      const again=$("again"); if(again) again.onclick=()=>{ stars=0; round=0; mistakes=0; starsEl.textContent=0;
+        document.querySelector(".card .actions").style.display="flex";
+        nextBtn.textContent="Почати →"; nextBtn.disabled=false; paintDots();
+        say.innerHTML="Ще спроба — цього разу читай умови уважніше \u{1F680}"; stage.innerHTML=""; };
+      const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    };
+    if(window.submitResult){
+      window.submitResult(earned).then(res=>{
+        if(res && res.ok){
+          finish(res.grade, (res.remaining!=null?res.remaining:0),
+            (res.remaining>0 ? ("Залишилось спроб: "+res.remaining+" — можеш покращити.") : "Спроби використано. Зараховано найкращий результат."));
+        } else if(res && res.error && /вичерпано/i.test(res.error)){
+          finish(localGrade, 0, "Ти вже використав усі спроби.");
+        } else {
+          finish(localGrade, 0, "Не вдалося зберегти — покажи результат учителю.");
+        }
+      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти — покажи результат учителю."));
+    } else {
+      finish(localGrade, 0, "Демо-режим.");
+    }
+  }
+
+  // ═══════════════ Керування раундами ═══════════════
+  const rounds=[round1,round2,round3,round4,round5];
+  function lockNext(){ nextBtn.disabled=true; nextBtn.textContent="Виконуй завдання…"; }
+  function done(){ nextBtn.disabled=false; nextBtn.textContent = round<TOTAL_ROUNDS-1 ? "Далі →" : "Фінал \u{1F3C1}"; }
+
+  nextBtn.onclick=()=>{
+    if(round>=TOTAL_ROUNDS){ return; }
+    if(nextBtn.textContent.startsWith("Почати") || nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")){
+      if(nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")) round++;
+      if(round>=TOTAL_ROUNDS){ finale(); return; }
+      paintDots(); rounds[round]();
+    }
+  };
+  paintDots();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кодування даних: біти, байти й обчислення — гра для 8 класу</title>
+<meta name="description" content="Підсумкова робота ГР 1: двійковий код, біт і байт, переходи між одиницями, довжина коду тексту, розмір BMP. Для 8 класу.">
+<style>
+  :root {
+    --bg1:#dfe9f5; --bg2:#eef4fb;
+    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
+    --navy:#1b3a5c; --navy-soft:#3a5a7d;
+    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
+    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
+    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
+    --star:#ffc043;
+    --shadow:rgba(27,58,92,.16);
+    --r:18px;
+    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
+      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
+      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
+      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
+      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a; --star:#ffcf5c;
+      --shadow:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
+    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
+    --bad:#ea6b6b;--star:#ffc043;--shadow:rgba(27,58,92,.16);
+  }
+  :root[data-theme="dark"]{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
+    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
+    --bad:#ff8a8a;--star:#ffcf5c;--shadow:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
+    display:flex; align-items:flex-start; justify-content:center; padding:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%; max-width:860px}
+
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+  .logo{font-weight:800; font-size:clamp(20px,4.5vw,28px); color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .spacer{flex:1}
+  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
+    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
+  .stars b{color:var(--accent-strong)}
+  .dots{display:flex; gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
+  .dots i.on{background:var(--accent)}
+  .dots i.done{background:var(--good)}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
+  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
+    display:flex; gap:14px; align-items:center}
+  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
+  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
+  .bubble b{color:var(--accent-strong)}
+  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
+  .stage{padding:20px 18px 22px}
+  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
+
+  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:64px}
+  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
+    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
+  .tile .ic{font-size:22px; line-height:1}
+  .tile:hover{border-color:var(--accent)}
+  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
+  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
+  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+  .tile .num{flex:none; width:24px;height:24px;border-radius:50%; background:var(--good); color:#fff; font-size:13px; display:grid; place-items:center}
+
+  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
+    padding:14px 12px 12px; width:160px; text-align:center; transition:.15s}
+  .folder:hover{border-color:var(--accent)}
+  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .folder.hit{animation:pop .3s}
+  .folder.nope{animation:shake .3s}
+  .folder .fic{font-size:38px; line-height:1}
+  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px; font-size:15px}
+  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
+
+  .ops{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+  .op{cursor:pointer; font-family:inherit; font-weight:800; font-size:15px; color:var(--navy);
+    background:var(--surface); border:2px solid var(--border); border-radius:999px; padding:11px 18px; transition:.15s}
+  .op:hover{border-color:var(--accent)}
+  .op:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .op.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .op.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface)); animation:shake .3s}
+  .prompt{background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:16px; text-align:center;
+    font-size:clamp(16px,3vw,20px); font-weight:700; color:var(--ink); margin-bottom:16px}
+
+  .actions{display:flex; justify-content:center; margin-top:20px}
+  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
+    padding:13px 26px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
+  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
+  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:0 5px 0 var(--accent-strong)}
+  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
+
+  .win{text-align:center; padding:30px 18px 34px}
+  .win .big{font-size:64px; line-height:1}
+  .win h2{color:var(--navy); font-size:clamp(22px,5vw,30px); margin:10px 0 4px}
+  .win p{color:var(--dim); font-size:17px; margin:0 0 8px}
+  .win .score{font-size:26px; font-weight:800; color:var(--accent-strong); margin:8px 0 18px}
+
+  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
+  .flash.go{animation:flash .7s}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
+</style>
+<style>
+  /* ── блок числових завдань (додано для koduvannya-8) ── */
+  .qbox{background:var(--surface-2); border:1px solid var(--border-2); border-radius:var(--r);
+        padding:18px 16px; margin:0 14px 6px; text-align:center}
+  .qnum{font-size:13px; color:var(--faint); letter-spacing:.04em; text-transform:uppercase;
+        font-weight:700; margin-bottom:8px}
+  .qtext{font-size:clamp(17px,3.2vw,21px); line-height:1.45; color:var(--ink); margin-bottom:16px}
+  .qtext code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace; font-size:1.08em;
+        background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2px 7px}
+  .qrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center}
+  .num-in{width:170px; font:800 26px/1 var(--sans); text-align:center; color:var(--ink);
+        background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:11px 12px}
+  .num-in:focus{outline:none; border-color:var(--accent)}
+  .num-in:disabled{opacity:.65}
+  .unit{font-weight:800; font-size:20px; color:var(--navy-soft)}
+  .verdict{min-height:26px; margin-top:14px; font-size:15px; line-height:1.4; color:var(--dim)}
+  .helper{margin:10px 14px 0; font-size:14px; color:var(--faint); text-align:center}
+  .helper b{color:var(--navy-soft)}
+</style>
+
+<script src="../supabase-config.js"></script>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  window.submitResult = async function(score){
+    try{
+      const play = JSON.parse(sessionStorage.getItem('play')||'null');
+      if(!play || !play.code) return { ok:false, error:'no session' };
+      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
+      if(error) return { ok:false, error: error.message };
+      return data;
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><span class="dot"></span>Кодування 8</div>
+    <div class="spacer"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stars">⭐ <b id="stars">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="bit" aria-hidden="true">01</div>
+      <div class="bubble" id="say">Це підсумкова робота ГР 1. П'ять раундів: біти, байти, одиниці, довжина коду.</div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <p class="helper">Ваги розрядів: <b>128 64 32 16 8 4 2 1</b> · 1 Б = 8 б · 1 кБ = 1024 Б · 1 МБ = 1024 кБ</p>
+    <div class="actions" style="padding:0 18px 22px">
+      <button class="btn" id="next">Почати →</button>
+    </div>
+  </div>
+
+  <footer>Підсумкова робота ГР 1 · «Кодування даних» · 8 клас · § 1.3</footer>
+</div>
+<div class="flash" id="flash" aria-hidden="true">⭐</div>
+
+<script>
+(() => {
+  "use strict";
+  const PLAY = (()=>{ try{ return JSON.parse(sessionStorage.getItem('play')||'null'); }catch(e){ return null; } })();
+  if(!PLAY || PLAY.game_slug !== 'koduvannya-8'){ location.replace('../index.html'); return; }
+  (function(){ var s0=document.getElementById('say'); if(s0) s0.innerHTML=
+    'Привіт, <b>'+(PLAY.student_name||'друже')+'</b>! Це <b>підсумкова робота ГР 1</b> з теми «Кодування даних». '
+    +'П\u2019ять раундів: прочитати байт, число \u2194 байт, переходи між одиницями, довжина коду тексту, розмір BMP. '
+    +'Кожна <b>помилкова</b> спроба знімає одну зірочку, тому рахуй, а не вгадуй. '
+    +'Спроб лишилось: <b>'+(PLAY.remaining!=null?PLAY.remaining:'?')+'</b>.'; })();
+
+  const $ = id => document.getElementById(id);
+  const stage=$("stage"), say=$("say"), nextBtn=$("next"), starsEl=$("stars"), dotsEl=$("dots");
+  let stars=0, round=0, mistakes=0;
+  const TOTAL_ROUNDS=5;
+  const MAX=18; // 4 + 4 + 5 + 3 + 2
+
+  for(let i=0;i<TOTAL_ROUNDS;i++){const d=document.createElement("i"); dotsEl.appendChild(d);}
+  const paintDots=()=>{[...dotsEl.children].forEach((d,i)=>{d.className = i<round?"done":(i===round?"on":"");});};
+
+  const addStar = (n=1) => {
+    stars+=n; starsEl.textContent=stars;
+    const f=$("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+  };
+  const bit = html => { say.innerHTML=html; };
+  const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+
+  // ── Раунд із числовою відповіддю (завдання одне за одним) ──
+  function numRound(cfg){
+    bit(cfg.hint);
+    let i=0;
+    const render=()=>{
+      const it=cfg.items[i];
+      stage.innerHTML=`<p class="task">${cfg.task}</p>
+        <div class="qbox">
+          <div class="qnum">Завдання ${i+1} з ${cfg.items.length}</div>
+          <div class="qtext">${it.q}</div>
+          <div class="qrow">
+            <input class="num-in" id="ans" type="text" inputmode="numeric" autocomplete="off"
+                   placeholder="?" aria-label="Твоя відповідь">
+            ${it.u ? `<span class="unit">${it.u}</span>` : ``}
+            <button class="btn" id="chk">Перевірити</button>
+          </div>
+          <div class="verdict" id="vd">Уведи число й натисни «Перевірити» (або Enter).</div>
+        </div>`;
+      const inp=$("ans"), vd=$("vd"), chk=$("chk");
+      try{ inp.focus(); }catch(e){}
+      const check=()=>{
+        const raw=(inp.value||"").replace(/\s|\u00a0/g,"").replace(",",".");
+        if(raw===""){ vd.textContent="Спочатку введи число \u{1F642}"; return; }
+        const val=Number(raw);
+        if(!isFinite(val)){ vd.textContent="Це не схоже на число. Спробуй ще."; return; }
+        if(Math.abs(val-it.a) < 1e-9){
+          addStar();
+          vd.innerHTML='<b style="color:var(--good)">Правильно \u2705</b>' + (it.ok?(" "+it.ok):"");
+          inp.disabled=true; chk.disabled=true;
+          i++;
+          if(i>=cfg.items.length){ bit(cfg.win); done(); }
+          else setTimeout(render, 900);
+        } else {
+          mistakes++;
+          vd.innerHTML='<b style="color:var(--bad)">Ні.</b> ' + it.tip;
+          try{ inp.select(); }catch(e){}
+        }
+      };
+      chk.onclick=check;
+      inp.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); check(); } };
+    };
+    render(); lockNext();
+  }
+
+  // ── Раунд «познач правильні» ──
+  function pickRound(cfg){
+    bit(cfg.hint);
+    let found=0; const total=cfg.items.filter(x=>x.ok).length;
+    stage.innerHTML=`<p class="task">${cfg.task}</p><div class="pool" id="pool"></div>`;
+    const pool=$("pool");
+    shuffle(cfg.items.slice()).forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="210px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{
+        if(b.dataset.done)return;
+        if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
+          bit("Так, ця пара правильна \u2705"); if(found===total){ bit(cfg.win); done(); } }
+        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні \u2014 <b>${it.n}</b>: ${it.s}.`); }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═══════════ РАУНД 1 — Прочитай байт (двійкова → десяткова) ═══════════
+  function round1(){
+    numRound({
+      task:"Прочитай двійковий запис \u2014 запиши число в десятковій системі",
+      hint:"Підпиши під одиницями їхні <b>ваги</b> (128 64 32 16 8 4 2 1) і <b>додай</b> лише ті, де стоїть 1.",
+      win:"Раунд 1 пройдено. Читати байт ти вмієш \u{1F44D}",
+      items:[
+        {q:"Яке десяткове число записано як <code>1011</code>?", a:11,
+         tip:"Ваги справа наліво: 1, 2, 4, 8. Додай ті, де стоїть одиниця.",
+         ok:"8 + 2 + 1 = 11"},
+        {q:"Яке десяткове число записано як <code>10010</code>?", a:18,
+         tip:"Тут п\u2019ять розрядів: ваги 16, 8, 4, 2, 1. Не забудь нуль у середині \u2014 він нічого не додає.",
+         ok:"16 + 2 = 18"},
+        {q:"Яке десяткове число записано байтом <code>00010100</code>?", a:20,
+         tip:"Провідні нулі нічого не змінюють. Дивись, під якими одиницями стоять ваги 16 і 4.",
+         ok:"16 + 4 = 20"},
+        {q:"Яке десяткове число записано байтом <code>01100100</code>?", a:100,
+         tip:"Ваги: 128 64 32 16 8 4 2 1. Одиниці стоять під 64, 32 і 4.",
+         ok:"64 + 32 + 4 = 100"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 2 — Число ↔ байт ═══════════
+  function round2(){
+    pickRound({
+      task:"Познач усі ПРАВИЛЬНІ пари «число \u2014 байт» \u{1F50E}",
+      hint:"Правильних пар <b>чотири</b>. Пам\u2019ятай: нулі дописують <b>злiва</b>, і в байті рівно вісім цифр.",
+      win:"Раунд 2 пройдено. Ти бачиш підміну в записі байта \u{1F3AF}",
+      items:[
+        {n:"5 = 00000101",   ic:"\u2705", ok:true},
+        {n:"13 = 00001101",  ic:"\u2705", ok:true},
+        {n:"20 = 00010100",  ic:"\u2705", ok:true},
+        {n:"63 = 00111111",  ic:"\u2705", ok:true},
+        {n:"5 = 10100000",   ic:"\u2753", ok:false, s:"нулі дописано праворуч, і це вже 160, а не 5"},
+        {n:"100 = 01100101", ic:"\u2753", ok:false, s:"64+32+4+1 = 101, а не 100"},
+        {n:"18 = 00011000",  ic:"\u2753", ok:false, s:"16+8 = 24, а не 18"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 3 — Переходи між одиницями ═══════════
+  function round3(){
+    numRound({
+      task:"Переходи між одиницями \u2014 запиши лише число",
+      hint:"До <b>менших</b> одиниць \u2014 множимо, до <b>більших</b> \u2014 ділимо. Біт\u2194байт \u2014 <b>8</b>, решта щаблів \u2014 <b>1024</b>.",
+      win:"Раунд 3 пройдено \u2014 і це половина роботи \u{1F4AA}",
+      items:[
+        {q:"<code>5 Б</code> \u2014 це скільком бітам?", a:40, u:"б",
+         tip:"Байт \u2192 біт: множимо на 8, а не на 1024.", ok:"5 \u00b7 8 = 40"},
+        {q:"<code>4096 Б</code> \u2014 це скільком кілобайтам?", a:4, u:"кБ",
+         tip:"До більших одиниць \u2014 ділимо. На 1024.", ok:"4096 : 1024 = 4"},
+        {q:"<code>2 кБ</code> \u2014 це скільком байтам?", a:2048, u:"Б",
+         tip:"До менших одиниць \u2014 множимо на 1024. Не на 1000.", ok:"2 \u00b7 1024 = 2048"},
+        {q:"<code>10 кБ</code> \u2014 це скільком <b>бітам</b>?", a:81920, u:"б",
+         tip:"Тут ДВА щаблі: спершу кБ \u2192 Б (\u00b71024), потім Б \u2192 б (\u00b78).", ok:"10 \u00b7 1024 = 10 240 Б \u2192 \u00b7 8 = 81 920"},
+        {q:"<code>3 МБ</code> \u2014 це скільком байтам?", a:3145728, u:"Б",
+         tip:"Іди щаблями: МБ \u2192 кБ \u2192 Б. Обидва множники по 1024.", ok:"3 \u00b7 1024 = 3072 кБ \u2192 \u00b7 1024 = 3 145 728"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 4 — Довжина коду тексту ═══════════
+  function round4(){
+    numRound({
+      task:"Довжина двійкового коду тексту (кодування Windows-1251)",
+      hint:"У Windows-1251 <b>один символ = один байт</b>. Пропуски й знаки \u2014 теж символи.",
+      win:"Раунд 4 пройдено. Прийом «поверхи» працює \u{1F3E0}",
+      items:[
+        {q:"Скільком <b>байтам</b> дорівнює код повідомлення <code>Біт і байт</code>?", a:10, u:"Б",
+         tip:"Порахуй КОЖЕН знак, разом із пропусками. Їх тут два.", ok:"10 символів \u2192 10 Б"},
+        {q:"А скільком <b>бітам</b> дорівнює код того самого повідомлення?", a:80, u:"б",
+         tip:"Байт \u2192 біт: множимо на 8.", ok:"10 \u00b7 8 = 80"},
+        {q:"У рядку 60 символів, на сторінці 40 рядків, у тексті 20 сторінок. Скільком <b>байтам</b> дорівнює код тексту?", a:48000, u:"Б",
+         tip:"«Поверхи»: символ \u2192 рядок \u2192 сторінка \u2192 текст. Кожен крок \u2014 одне множення.",
+         ok:"60 \u00b7 40 = 2400 \u2192 \u00b7 20 = 48 000"}
+      ]
+    });
+  }
+
+  // ═══════════ РАУНД 5 — Розмір BMP ═══════════
+  function round5(){
+    numRound({
+      task:"Розмір файлу BMP \u2014 останній раунд",
+      hint:"У 24-розрядному рисунку піксель \u2014 <b>3 байти</b>. Довжина рядка мусить бути <b>кратна 4</b>: залишок 1 \u2192 +3, залишок 2 \u2192 +2, залишок 3 \u2192 +1.",
+      win:"Усі п\u2019ять раундів пройдено! Тисни «Фінал» \u{1F3C1}",
+      items:[
+        {q:"24-розрядний BMP, ширина <b>25</b> пікселів. Скільком байтам дорівнює <b>один рядок із вирівнюванням</b>?", a:76, u:"Б",
+         tip:"25 \u00b7 3 = 75. Тепер: 75 = 4\u00b718 + 3, отже залишок 3 \u2192 додати 1.",
+         ok:"75 + 1 = 76"},
+        {q:"Той самий рисунок має висоту <b>20</b> пікселів. Який <b>розмір файлу</b> в байтах (заголовок \u2014 54 Б)?", a:1574, u:"Б",
+         tip:"Рядок із вирівнюванням \u2014 76 Б. Помнож на кількість рядків і додай заголовок 54 Б.",
+         ok:"20 \u00b7 76 = 1520 \u2192 + 54 = 1574"}
+      ]
+    });
+  }
+
+  // ═══════════════ Фінал ═══════════════
+  function finale(){
+    dotsEl.querySelectorAll("i").forEach(d=>d.className="done");
+    document.querySelector(".card .actions").style.display="none";
+    const earned = Math.max(0, MAX - mistakes);
+    const localGrade = Math.max(1, Math.round(1+11*earned/MAX));
+    say.innerHTML="Зберігаю твій результат\u2026 \u23f3";
+    stage.innerHTML='<div class="win"><div class="big">\u23f3</div><h2>Рахуємо оцінку\u2026</h2></div>';
+    const finish = (grade, remaining, note) => {
+      const canRetry = remaining > 0;
+      say.innerHTML="Підсумкову роботу ГР 1 завершено! \u{1F389}";
+      stage.innerHTML=`<div class="win">
+        <div class="big">\u{1F3C6}</div>
+        <h2>Готово!</h2>
+        <div class="score">\u2b50 ${earned} / ${MAX} (помилок: ${mistakes})</div>
+        <div class="score" style="color:var(--good)">Оцінка: ${grade} / 12</div>
+        <p>${note}</p>
+        <p style="opacity:.75;font-size:14px">Цей бал іде у свідоцтво досягнень за <b>ГР 1 \u2014 опрацювання даних</b>.</p>
+        ${canRetry ? '<button class="btn" id="again">Спробувати ще раз \u21ba</button>' : '<button class="btn ghost" id="home">Вийти \u21a9</button>'}
+      </div>`;
+      const again=$("again"); if(again) again.onclick=()=>{ stars=0; round=0; mistakes=0; starsEl.textContent=0;
+        document.querySelector(".card .actions").style.display="flex";
+        nextBtn.textContent="Почати \u2192"; nextBtn.disabled=false; paintDots();
+        say.innerHTML="Ще спроба \u2014 цього разу рахуй уважніше \u{1F680}"; stage.innerHTML=""; };
+      const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    };
+    if(window.submitResult){
+      window.submitResult(earned).then(res=>{
+        if(res && res.ok){
+          finish(res.grade, (res.remaining!=null?res.remaining:0),
+            (res.remaining>0 ? ("Залишилось спроб: "+res.remaining+" \u2014 можеш покращити.") : "Спроби використано. Зараховано найкращий результат."));
+        } else if(res && res.error && /вичерпано/i.test(res.error)){
+          finish(localGrade, 0, "Ти вже використав усі спроби.");
+        } else {
+          finish(localGrade, 0, "Не вдалося зберегти \u2014 покажи результат учителю.");
+        }
+      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти \u2014 покажи результат учителю."));
+    } else {
+      finish(localGrade, 0, "Демо-режим.");
+    }
+  }
+
+  // ═══════════════ Керування раундами ═══════════════
+  const rounds=[round1,round2,round3,round4,round5];
+  function lockNext(){ nextBtn.disabled=true; nextBtn.textContent="Виконуй завдання\u2026"; }
+  function done(){ nextBtn.disabled=false; nextBtn.textContent = round<TOTAL_ROUNDS-1 ? "Далі \u2192" : "Фінал \u{1F3C1}"; }
+
+  nextBtn.onclick=()=>{
+    if(round>=TOTAL_ROUNDS){ return; }
+    if(nextBtn.textContent.startsWith("Почати") || nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")){
+      if(nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")) round++;
+      if(round>=TOTAL_ROUNDS){ finale(); return; }
+      paintDots(); rounds[round]();
+    }
+  };
+  paintDots();
+})();
+</script>
+</body>
+</html>

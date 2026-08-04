@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Безпека в Інтернеті — гра для 5 класу</title>
+<meta name="description" content="Підсумкова робота ГР 4: правила безпеки в Інтернеті, мережевий етикет, факт і судження, надійність сайту. Для 5 класу.">
+<style>
+  :root {
+    --bg1:#dfe9f5; --bg2:#eef4fb;
+    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
+    --navy:#1b3a5c; --navy-soft:#3a5a7d;
+    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
+    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
+    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
+    --star:#ffc043;
+    --shadow:rgba(27,58,92,.16);
+    --r:18px;
+    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
+      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
+      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
+      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
+      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a; --star:#ffcf5c;
+      --shadow:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
+    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
+    --bad:#ea6b6b;--star:#ffc043;--shadow:rgba(27,58,92,.16);
+  }
+  :root[data-theme="dark"]{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
+    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
+    --bad:#ff8a8a;--star:#ffcf5c;--shadow:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
+    display:flex; align-items:flex-start; justify-content:center; padding:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%; max-width:860px}
+
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+  .logo{font-weight:800; font-size:clamp(20px,4.5vw,28px); color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .spacer{flex:1}
+  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
+    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
+  .stars b{color:var(--accent-strong)}
+  .dots{display:flex; gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
+  .dots i.on{background:var(--accent)}
+  .dots i.done{background:var(--good)}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
+  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
+    display:flex; gap:14px; align-items:center}
+  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
+  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
+  .bubble b{color:var(--accent-strong)}
+  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
+  .stage{padding:20px 18px 22px}
+  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
+
+  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:64px}
+  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
+    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
+  .tile .ic{font-size:22px; line-height:1}
+  .tile:hover{border-color:var(--accent)}
+  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
+  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
+  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+
+  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
+    padding:14px 12px 12px; width:160px; text-align:center; transition:.15s}
+  .folder:hover{border-color:var(--accent)}
+  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .folder.hit{animation:pop .3s}
+  .folder.nope{animation:shake .3s}
+  .folder .fic{font-size:38px; line-height:1}
+  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px; font-size:15px}
+  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
+
+  .ops{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+  .op{cursor:pointer; font-family:inherit; font-weight:800; font-size:15px; color:var(--navy);
+    background:var(--surface); border:2px solid var(--border); border-radius:999px; padding:11px 18px; transition:.15s}
+  .op:hover{border-color:var(--accent)}
+  .op:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .op.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .op.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface)); animation:shake .3s}
+  .prompt{background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:16px; text-align:center;
+    font-size:clamp(16px,3vw,20px); font-weight:700; color:var(--ink); margin-bottom:16px}
+
+  .actions{display:flex; justify-content:center; margin-top:20px}
+  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
+    padding:13px 26px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
+  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
+  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:0 5px 0 var(--accent-strong)}
+  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
+
+  .win{text-align:center; padding:30px 18px 34px}
+  .win .big{font-size:64px; line-height:1}
+  .win h2{color:var(--navy); font-size:clamp(22px,5vw,30px); margin:10px 0 4px}
+  .win p{color:var(--dim); font-size:17px; margin:0 0 8px}
+  .win .score{font-size:26px; font-weight:800; color:var(--accent-strong); margin:8px 0 18px}
+
+  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
+  .flash.go{animation:flash .7s}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
+</style>
+<script src="../supabase-config.js"></script>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  window.submitResult = async function(score){
+    try{
+      const play = JSON.parse(sessionStorage.getItem('play')||'null');
+      if(!play || !play.code) return { ok:false, error:'no session' };
+      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
+      if(error) return { ok:false, error: error.message };
+      return data;
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><span class="dot"></span>Безпека в Інтернеті</div>
+    <div class="spacer"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stars">⭐ <b id="stars">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="bit" aria-hidden="true">🤖</div>
+      <div class="bubble" id="say">Привіт! Я робот <b>Біт</b>. Перевіримо, чи вмієш ти поводитися в Інтернеті безпечно й розумно?</div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="actions" style="padding:0 18px 22px">
+      <button class="btn" id="next">Почати →</button>
+    </div>
+  </div>
+
+  <footer>Підсумкова робота ГР 4 · «Безпека в Інтернеті» · 5 клас</footer>
+</div>
+<div class="flash" id="flash" aria-hidden="true">⭐</div>
+
+<script>
+(() => {
+  "use strict";
+  const PLAY = (()=>{ try{ return JSON.parse(sessionStorage.getItem('play')||'null'); }catch(e){ return null; } })();
+  if(!PLAY || PLAY.game_slug !== 'bezpeka-internet'){ location.replace('../index.html'); return; }
+  (function(){ var s0=document.getElementById('say'); if(s0) s0.innerHTML='Привіт, <b>'+(PLAY.student_name||'друже')+'</b>! Я робот Біт. Це підсумкова гра про безпеку в Інтернеті. Спроб лишилось: <b>'+(PLAY.remaining!=null?PLAY.remaining:'?')+'</b>.'; })();
+  const $ = id => document.getElementById(id);
+  const stage=$("stage"), say=$("say"), nextBtn=$("next"), starsEl=$("stars"), dotsEl=$("dots");
+  let stars=0, round=0, mistakes=0;
+  const TOTAL_ROUNDS=4;
+  const MAX=20; // 6 + 5 + 4 + 5
+
+  for(let i=0;i<TOTAL_ROUNDS;i++){const d=document.createElement("i"); dotsEl.appendChild(d);}
+  const paintDots=()=>{[...dotsEl.children].forEach((d,i)=>{d.className = i<round?"done":(i===round?"on":"");});};
+
+  const addStar = (n=1) => {
+    stars+=n; starsEl.textContent=stars;
+    const f=$("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+  };
+  const bit = html => { say.innerHTML=html; };
+
+  // ═══════════════ РАУНД 1 — Безпечно чи небезпечно ═══════════════
+  function round1(){
+    bit("Розклади дії: <b>безпечно</b> це чи <b>небезпечно</b>? Спершу торкнись картки, потім — папки.");
+    const items=[
+      {n:"Не даю нікому пароль",ic:"🔒",f:"Безпечно"},
+      {n:"Кажу дорослим про підозріле",ic:"🗣️",f:"Безпечно"},
+      {n:"Користуюсь антивірусом",ic:"🛡️",f:"Безпечно"},
+      {n:"Пишу незнайомцю свою адресу",ic:"📍",f:"Небезпечно"},
+      {n:"Іду на зустріч з незнайомцем",ic:"🚷",f:"Небезпечно"},
+      {n:"Вводжу пароль на дивному сайті",ic:"⚠️",f:"Небезпечно"},
+    ];
+    const folders=["Безпечно","Небезпечно"];
+    let sel=null, left=items.length;
+    stage.innerHTML=`<p class="task">Безпечно чи небезпечно? 🛡️</p>
+      <div class="pool" id="pool"></div>
+      <div class="targets" id="targets"></div>`;
+    const pool=$("pool"), targets=$("targets");
+    items.forEach((it,i)=>{
+      const b=document.createElement("button"); b.className="tile"; b.dataset.i=i;
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{ if(b.classList.contains("gone"))return;
+        [...pool.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); sel=it; sel.el=b;
+        bit(`Обрано: <b>${it.n}</b>. Це безпечно чи ні?`); };
+      pool.appendChild(b);
+    });
+    const counts={}; folders.forEach(x=>counts[x]=0);
+    folders.forEach(name=>{
+      const d=document.createElement("div"); d.className="folder"; d.tabIndex=0; d.setAttribute("role","button");
+      const fic = name==="Безпечно"?"✅":"⛔";
+      d.innerHTML=`<div class="fic">${fic}</div><div class="fname">${name}</div><div class="cnt">0</div>`;
+      const act=()=>{
+        if(!sel){ bit("Спочатку торкнись <b>картки</b>, потім папки 🙂"); d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300); return; }
+        if(sel.f===name){
+          sel.el.classList.add("gone"); counts[name]++; d.querySelector(".cnt").textContent=counts[name];
+          d.classList.add("hit"); setTimeout(()=>d.classList.remove("hit"),300);
+          addStar(); left--; sel=null;
+          if(left===0){ bit("Чудово! Ти знаєш правила безпеки ✨"); done(); }
+          else bit("Правильно! 👍 Далі?");
+        } else {
+          d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300);
+          mistakes++; bit(`Подумай ще: <b>${sel.n}</b> — це справді безпечно?`);
+        }
+      };
+      d.onclick=act; d.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}};
+      targets.appendChild(d);
+    });
+    lockNext();
+  }
+
+  // ═══════════════ РАУНД 2 — Мережевий етикет (обери правильні) ═══════════════
+  function round2(){
+    bit("Познач лише те, що відповідає <b>мережевому етикету</b> (як варто поводитися).");
+    const items=[
+      {n:"Бути ввічливим у чаті",ic:"🙂",ok:true},
+      {n:"Ображати інших",ic:"😠",ok:false,s:"це грубо"},
+      {n:"Дякувати за допомогу",ic:"🙏",ok:true},
+      {n:"Поширювати неправду",ic:"❌",ok:false,s:"це шкідливо"},
+      {n:"Питати дозволу на чуже фото",ic:"📷",ok:true},
+      {n:"Брати чужу роботу без згоди",ic:"🚫",ok:false,s:"порушує авторське право"},
+      {n:"Думати перед публікацією",ic:"💭",ok:true},
+    ];
+    let foundGood=0; const totalGood=items.filter(x=>x.ok).length;
+    stage.innerHTML=`<p class="task">Що відповідає мережевому етикету? ✅</p><div class="pool" id="pool"></div>`;
+    const pool=$("pool");
+    items.forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="160px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{
+        if(b.dataset.done)return;
+        if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); foundGood++;
+          bit("Так, це ввічливо ✅"); if(foundGood===totalGood){ bit("Ти справжній знавець етикету! 🎯"); done(); } }
+        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні — <b>${it.n}</b>: ${it.s}.`); }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═══════════════ РАУНД 3 — Факт чи судження ═══════════════
+  function round3(){
+    const q=[
+      {t:"«Київ — столиця України»",a:"Факт"},
+      {t:"«Ця пісня — найкраща у світі»",a:"Судження"},
+      {t:"«Вода замерзає при 0 °C»",a:"Факт"},
+      {t:"«Літо краще за зиму»",a:"Судження"},
+    ];
+    const ops=["Факт","Судження"];
+    let qi=0;
+    bit("Це <b>факт</b> (можна перевірити) чи <b>судження</b> (чиясь думка)?");
+    const render=()=>{
+      stage.innerHTML=`<p class="task">Факт чи судження? (${qi+1} / ${q.length})</p>
+        <div class="prompt">${q[qi].t}</div><div class="ops" id="ops"></div>`;
+      const box=$("ops");
+      ops.forEach(o=>{
+        const b=document.createElement("button"); b.className="op"; b.textContent=o;
+        b.onclick=()=>{
+          if(o===q[qi].a){ b.classList.add("ok"); addStar(); qi++;
+            if(qi<q.length){ bit("Точно! 🔥"); setTimeout(render,550); }
+            else { bit("Ти вмієш відрізняти факт від думки! 💪"); done(); } }
+          else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+            mistakes++; bit("Подумай: це можна перевірити (факт) чи це чиясь думка (судження)?"); }
+        };
+        box.appendChild(b);
+      });
+    };
+    render(); lockNext();
+  }
+
+  // ═══════════════ РАУНД 4 — Надійний сайт (обери ознаки) ═══════════════
+  function round4(){
+    bit("Останнє! Познач <b>ознаки надійного сайту</b> (яким можна довіряти).");
+    const items=[
+      {n:"Указано автора",ic:"✍️",ok:true},
+      {n:"Є контакти",ic:"📞",ok:true},
+      {n:"Свіжа дата оновлення",ic:"📅",ok:true},
+      {n:"Купа нав'язливої реклами",ic:"📢",ok:false,s:"це підозріло"},
+      {n:"Немає автора й джерел",ic:"❓",ok:false,s:"невідомо, хто написав"},
+    ];
+    let foundGood=0; const totalGood=items.filter(x=>x.ok).length;
+    stage.innerHTML=`<p class="task">Ознаки НАДІЙНОГО сайту 🔎</p><div class="pool" id="pool"></div>`;
+    const pool=$("pool");
+    items.forEach(it=>{
+      const b=document.createElement("button"); b.className="tile"; b.style.minWidth="160px";
+      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick=()=>{
+        if(b.dataset.done)return;
+        if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); foundGood++;
+          bit("Так, це ознака надійності ✅"); if(foundGood===totalGood){ bit("Ти вмієш перевіряти сайти! 🏆"); done(); } }
+        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні — <b>${it.n}</b>: ${it.s}.`); }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═══════════════ Фінал ═══════════════
+  function finale(){
+    dotsEl.querySelectorAll("i").forEach(d=>d.className="done");
+    document.querySelector(".card .actions").style.display="none";
+    const earned = Math.max(0, MAX - mistakes);
+    const localGrade = Math.max(1, Math.round(1+11*earned/MAX));
+    say.innerHTML="Зберігаю твій результат… ⏳";
+    stage.innerHTML='<div class="win"><div class="big">⏳</div><h2>Рахуємо оцінку…</h2></div>';
+    const finish = (grade, remaining, note) => {
+      const canRetry = remaining > 0;
+      say.innerHTML="Ти пройшов підсумкову роботу про безпеку в Інтернеті! 🎉";
+      stage.innerHTML=`<div class="win">
+        <div class="big">🏆</div>
+        <h2>Готово!</h2>
+        <div class="score">⭐ ${earned} / ${MAX} (помилок: ${mistakes})</div>
+        <div class="score" style="color:var(--good)">Оцінка: ${grade} / 12</div>
+        <p>${note}</p>
+        ${canRetry ? '<button class="btn" id="again">Спробувати ще раз ↺</button>' : '<button class="btn ghost" id="home">Вийти ↩</button>'}
+      </div>`;
+      const again=$("again"); if(again) again.onclick=()=>{ stars=0; round=0; mistakes=0; starsEl.textContent=0;
+        document.querySelector(".card .actions").style.display="flex";
+        nextBtn.textContent="Почати →"; nextBtn.disabled=false; paintDots();
+        say.innerHTML="Ще спроба — покажи максимум! 🚀"; stage.innerHTML=""; };
+      const home=$("home"); if(home) home.onclick=()=>{ location.href="../index.html"; };
+    };
+    if(window.submitResult){
+      window.submitResult(earned).then(res=>{
+        if(res && res.ok){
+          finish(res.grade, (res.remaining!=null?res.remaining:0),
+            (res.remaining>0 ? ("Залишилось спроб: "+res.remaining+" — можеш покращити.") : "Спроби використано. Зараховано найкращий результат."));
+        } else if(res && res.error && /вичерпано/i.test(res.error)){
+          finish(localGrade, 0, "Ти вже використав усі спроби.");
+        } else {
+          finish(localGrade, 0, "Не вдалося зберегти — покажи результат учителю.");
+        }
+      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти — покажи результат учителю."));
+    } else {
+      finish(localGrade, 0, "Демо-режим.");
+    }
+  }
+
+  // ═══════════════ Керування раундами ═══════════════
+  const rounds=[round1,round2,round3,round4];
+  function lockNext(){ nextBtn.disabled=true; nextBtn.textContent="Виконуй завдання…"; }
+  function done(){ nextBtn.disabled=false; nextBtn.textContent = round<TOTAL_ROUNDS-1 ? "Далі →" : "Фінал 🏁"; }
+
+  nextBtn.onclick=()=>{
+    if(round>=TOTAL_ROUNDS){ return; }
+    if(nextBtn.textContent.startsWith("Почати") || nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")){
+      if(nextBtn.textContent.startsWith("Далі") || nextBtn.textContent.startsWith("Фінал")) round++;
+      if(round>=TOTAL_ROUNDS){ finale(); return; }
+      paintDots(); rounds[round]();
+    }
+  };
+  paintDots();
+})();
+</script>
+</body>
+</html>

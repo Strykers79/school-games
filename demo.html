@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Демо — сайт навчальних ігор</title>
+<meta name="description" content="Демонстраційна гра: як працює сайт навчальних ігор — вхід за кодом, бал 1–12 на сервері, спроби, адмін-панель, експорт для Мрії.">
+<style>
+  :root {
+    --bg1:#dfe9f5; --bg2:#eef4fb;
+    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
+    --navy:#1b3a5c; --navy-soft:#3a5a7d;
+    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
+    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
+    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
+    --shadow:rgba(27,58,92,.16);
+    --r:18px;
+    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
+      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
+      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
+      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
+      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a;
+      --shadow:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
+    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
+    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
+    --bad:#ea6b6b;--shadow:rgba(27,58,92,.16);
+  }
+  :root[data-theme="dark"]{
+    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
+    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
+    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
+    --bad:#ff8a8a;--shadow:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
+    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
+    display:flex; align-items:flex-start; justify-content:center; padding:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%; max-width:880px}
+
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+  .logo{font-weight:800; font-size:clamp(19px,4.2vw,26px); color:var(--navy); display:flex; align-items:center; gap:10px}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .badge{font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+    background:var(--accent); color:var(--accent-ink); padding:4px 10px; border-radius:999px}
+  .spacer{flex:1}
+  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
+    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
+  .stars b{color:var(--accent-strong)}
+  .dots{display:flex; gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
+  .dots i.on{background:var(--accent)}
+  .dots i.done{background:var(--good)}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
+  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
+    display:flex; gap:14px; align-items:center}
+  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
+  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
+  .bubble b{color:var(--accent-strong)}
+  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
+  .stage{padding:20px 18px 22px}
+  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
+
+  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:60px}
+  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
+    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
+  .tile .ic{font-size:22px; line-height:1}
+  .tile:hover{border-color:var(--accent)}
+  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04)}
+  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
+  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
+  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+  .tile .num{flex:none; width:24px;height:24px;border-radius:50%; background:var(--good); color:#fff; font-size:13px; display:grid; place-items:center}
+
+  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
+    padding:14px 12px 12px; width:160px; text-align:center; transition:.15s}
+  .folder:hover{border-color:var(--accent)}
+  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+  .folder.hit{animation:pop .3s}
+  .folder.nope{animation:shake .3s}
+  .folder .fic{font-size:38px; line-height:1}
+  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px; font-size:15px}
+  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
+
+  .actions{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; padding:0 18px 22px}
+  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
+    padding:13px 24px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
+  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
+  .btn[disabled]{opacity:.4; cursor:not-allowed}
+  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
+
+  .win{text-align:center; padding:26px 18px 30px}
+  .win .big{font-size:60px; line-height:1}
+  .win h2{color:var(--navy); font-size:clamp(21px,4.6vw,28px); margin:10px 0 4px}
+  .win p{color:var(--dim); font-size:16px; margin:0 0 8px}
+  .win .score{font-size:24px; font-weight:800; color:var(--accent-strong); margin:8px 0 4px}
+
+  .intro{padding:22px 20px 24px}
+  .intro h1{color:var(--navy); font-size:clamp(21px,4.6vw,28px); margin:0 0 6px; text-wrap:balance}
+  .intro .lede{color:var(--dim); font-size:16px; margin:0 0 16px; line-height:1.45}
+  .steps{display:grid; gap:10px; margin:0 0 18px; padding:0; list-style:none}
+  .steps li{display:flex; gap:11px; align-items:flex-start; background:var(--surface-2);
+    border:1px solid var(--border-2); border-radius:13px; padding:11px 13px; font-size:15px; line-height:1.4}
+  .steps .n{flex:none; width:25px;height:25px;border-radius:50%; background:var(--navy); color:#fff;
+    font-size:13px; font-weight:800; display:grid; place-items:center}
+
+  .feat{display:grid; gap:9px; margin:6px 0 0; padding:0; list-style:none; text-align:left}
+  .feat li{display:flex; gap:10px; align-items:flex-start; font-size:15px; line-height:1.42; color:var(--ink)}
+  .feat .ic{flex:none; font-size:18px; line-height:1.35}
+  .feat b{color:var(--navy)}
+  .note{background:var(--surface-2); border:1px solid var(--border-2); border-left:4px solid var(--accent);
+    border-radius:12px; padding:12px 14px; font-size:14.5px; color:var(--ink); line-height:1.45; margin-top:16px; text-align:left}
+  .sect{font-weight:800; color:var(--navy); font-size:15px; margin:20px 0 8px; text-align:left;
+    text-transform:uppercase; letter-spacing:.05em}
+
+  .codebox{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:6px 0 4px}
+  .codebox input{font-family:inherit; font-size:22px; font-weight:800; letter-spacing:4px; text-align:center;
+    text-transform:uppercase; padding:12px 14px; width:190px; border:2px solid var(--border);
+    border-radius:14px; background:var(--surface-2); color:var(--ink)}
+  .codebox input:focus{outline:none; border-color:var(--accent)}
+  .hint{color:var(--faint); font-size:13.5px; margin-top:8px}
+
+  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
+  .flash.go{animation:flash .7s}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px; line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><span class="dot"></span>Навчальні ігри</div>
+    <span class="badge">демо</span>
+    <div class="spacer"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stars">⭐ <b id="stars">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="bit" aria-hidden="true" id="mascot">🤖</div>
+      <div class="bubble" id="say">Привіт! Я робот <b>Біт</b>. Покажу за 3 хвилини, як працює цей сайт.</div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="actions" id="actions"></div>
+  </div>
+
+  <footer>
+    Демонстраційна гра · результат <b>не зберігається</b> й <b>не потрапляє</b> в журнал<br>
+    Справжні ігри відкриваються лише за особистим кодом учня
+  </footer>
+</div>
+<div class="flash" id="flash" aria-hidden="true">⭐</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const stage=$("stage"), say=$("say"), actions=$("actions"),
+        starsEl=$("stars"), dotsEl=$("dots"), mascot=$("mascot");
+
+  const MAX = 12;               // 4 + 4 + 4
+  const TOTAL_ROUNDS = 3;
+  let stars = 0, round = 0, mistakes = 0;
+
+  // Та сама шкала, що на сервері (pct_to_grade)
+  const SCALE = [[90,12],[82,11],[74,10],[66,9],[58,8],[50,7],[42,6],[34,5],[25,4],[17,3],[8,2]];
+  const pctToGrade = p => { for (const [t,g] of SCALE) if (p >= t) return g; return 1; };
+
+  for (let i=0;i<TOTAL_ROUNDS;i++) dotsEl.appendChild(document.createElement("i"));
+  const paintDots = () => [...dotsEl.children].forEach((d,i)=>{
+    d.className = i < round ? "done" : (i === round ? "on" : "");
+  });
+  const bit = html => { say.innerHTML = html; };
+  const addStar = () => {
+    stars++; starsEl.textContent = stars;
+    const f = $("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+  };
+  const shuffle = a => { for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const setActions = html => { actions.innerHTML = html; };
+
+  // ═════════════════ ЕКРАН 1 — що це таке ═════════════════
+  function screenIntro(){
+    round = 0; paintDots(); dotsEl.style.visibility = "hidden";
+    mascot.textContent = "🤖";
+    bit("Привіт! Я робот <b>Біт</b>. Покажу за 3 хвилини, як працює цей сайт.");
+    stage.innerHTML = `
+      <div class="intro">
+        <h1>Навчальні ігри з оцінкою 1–12</h1>
+        <p class="lede">Учень відкриває посилання, вводить <b>особистий код</b> — і одразу грає.
+          Без реєстрації, без пароля, з будь-якого пристрою. Оцінку рахує <b>сервер</b>,
+          а вчитель бачить результати у своїй адмін-панелі.</p>
+        <ol class="steps">
+          <li><span class="n">1</span><span>Учитель створює <b>коди</b> на клас і роздає їх <b>приватно</b> — кожному свій</span></li>
+          <li><span class="n">2</span><span>Учень відкриває головну сторінку й уводить код — сайт сам відкриває <b>потрібну гру</b></span></li>
+          <li><span class="n">3</span><span>Учень проходить кілька раундів; помилка знімає бал, але <b>не завершує</b> гру</span></li>
+          <li><span class="n">4</span><span>На екрані з'являється <b>оцінка 1–12</b>; спроб зазвичай дві, зараховується краща</span></li>
+          <li><span class="n">5</span><span>Учитель бачить результати в адмінці й переносить бали в <b>Мрію</b></span></li>
+        </ol>
+        <div class="note">Далі — <b>коротка демо-гра</b> з трьох раундів. Це ті самі механіки,
+          що в справжніх іграх, лише зміст простіший і результат нікуди не записується.</div>
+      </div>`;
+    setActions(`<button class="btn" id="go">Спробувати як учень →</button>
+                <button class="btn ghost" id="skip">Одразу можливості</button>`);
+    $("go").onclick = screenLogin;
+    $("skip").onclick = () => screenFeatures(true);
+  }
+
+  // ═════════════════ ЕКРАН 2 — вхід за кодом (імітація) ═════════════════
+  function screenLogin(){
+    bit("Так виглядає вхід. У демо код уже вписано — просто натисни <b>Увійти</b>.");
+    stage.innerHTML = `
+      <p class="task" style="text-align:center">Вхід за кодом</p>
+      <div class="codebox"><input id="code" value="DEMO" maxlength="8" autocomplete="off" inputmode="latin"></div>
+      <p class="hint" style="text-align:center">
+        У справжній грі код видає вчитель — він прив'язує результат до конкретного учня.<br>
+        Код можна вимкнути або видати новий, а кількість спроб задає вчитель.</p>`;
+    setActions(`<button class="btn" id="enter">Увійти →</button>
+                <button class="btn ghost" id="back">Назад</button>`);
+    $("enter").onclick = () => { round = 0; dotsEl.style.visibility = "visible"; paintDots(); rounds[0](); };
+    $("back").onclick = screenIntro;
+    $("code").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
+  }
+
+  // ═════════════════ Механіка А — розклади по папках ═════════════════
+  function sortRound(cfg){
+    bit(cfg.hint);
+    let sel = null, left = cfg.items.length;
+    stage.innerHTML = `<p class="task">${cfg.task}</p>
+      <div class="pool" id="pool"></div><div class="targets" id="targets"></div>`;
+    const pool = $("pool"), targets = $("targets");
+    shuffle(cfg.items.slice()).forEach(it => {
+      const b = document.createElement("button"); b.className = "tile";
+      b.innerHTML = `<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick = () => {
+        if (b.classList.contains("gone")) return;
+        [...pool.children].forEach(x => x.classList.remove("sel"));
+        b.classList.add("sel"); sel = it; sel.el = b;
+        bit(`Обрано: <b>${it.n}</b>. ${cfg.pick}`);
+      };
+      pool.appendChild(b);
+    });
+    const counts = {}; cfg.folders.forEach(f => counts[f.name] = 0);
+    cfg.folders.forEach(f => {
+      const d = document.createElement("div");
+      d.className = "folder"; d.tabIndex = 0; d.setAttribute("role","button");
+      d.innerHTML = `<div class="fic">${f.ic}</div><div class="fname">${f.name}</div><div class="cnt">0</div>`;
+      const act = () => {
+        if (!sel){ bit("Спочатку торкнись <b>картки</b>, потім папки 🙂");
+          d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300); return; }
+        if (sel.f === f.name){
+          sel.el.classList.add("gone"); counts[f.name]++;
+          d.querySelector(".cnt").textContent = counts[f.name];
+          d.classList.add("hit"); setTimeout(()=>d.classList.remove("hit"),300);
+          addStar(); left--; sel = null;
+          if (left === 0){ bit(cfg.win); done(); } else bit("Правильно! 👍");
+        } else {
+          d.classList.add("nope"); setTimeout(()=>d.classList.remove("nope"),300);
+          mistakes++; bit(`Ще подумай: <b>${sel.n}</b> — точно сюди?`);
+        }
+      };
+      d.onclick = act;
+      d.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); act(); } };
+      targets.appendChild(d);
+    });
+    lockNext();
+  }
+
+  // ═════════════════ Механіка Б — познач правильні ═════════════════
+  function pickRound(cfg){
+    bit(cfg.hint);
+    let found = 0; const total = cfg.items.filter(x => x.ok).length;
+    stage.innerHTML = `<p class="task">${cfg.task}</p><div class="pool" id="pool"></div>`;
+    const pool = $("pool");
+    shuffle(cfg.items.slice()).forEach(it => {
+      const b = document.createElement("button"); b.className = "tile"; b.style.minWidth = "170px";
+      b.innerHTML = `<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick = () => {
+        if (b.dataset.done) return;
+        if (it.ok){
+          b.classList.add("ok"); b.dataset.done = 1; addStar(); found++;
+          bit("Так, правильно ✅");
+          if (found === total){ bit(cfg.win); done(); }
+        } else {
+          b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні — <b>${it.n}</b>: ${it.s}.`);
+        }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═════════════════ Механіка В — розстав по порядку ═════════════════
+  function orderRound(cfg){
+    bit(cfg.hint);
+    let step = 0;
+    stage.innerHTML = `<p class="task">${cfg.task}</p><div class="pool" id="pool"></div>`;
+    const pool = $("pool");
+    shuffle(cfg.steps.slice()).forEach(it => {
+      const b = document.createElement("button"); b.className = "tile"; b.style.minWidth = "150px";
+      b.innerHTML = `<span class="ic">${it.ic}</span>${it.n}`;
+      b.onclick = () => {
+        if (b.dataset.done) return;
+        if (it.i === step){
+          step++; b.dataset.done = 1; b.classList.add("ok");
+          b.insertAdjacentHTML("afterbegin", `<span class="num">${step}</span>`);
+          addStar();
+          if (step === cfg.steps.length){ bit(cfg.win); done(); }
+          else bit(`Так! Крок ${step} правильний. Що далі?`);
+        } else {
+          b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+          mistakes++; bit(`Ні, це не крок ${step+1}. Що йде <b>раніше</b>?`);
+        }
+      };
+      pool.appendChild(b);
+    });
+    lockNext();
+  }
+
+  // ═════════════════ Раунди демо ═════════════════
+  function round1(){
+    mascot.textContent = "🤖";
+    sortRound({
+      task: "Цифровий пристрій чи ні? 🔢",
+      hint: "Механіка перша: <b>розкласти по папках</b>. Спершу картка, потім папка.",
+      pick: "Він кодує дані цифрами?",
+      win: "Готово! Це була механіка «розкласти по папках» ✨",
+      folders: [{name:"Цифровий", ic:"🔢"}, {name:"Нецифровий", ic:"🔧"}],
+      items: [
+        {n:"Смартфон", ic:"📱", f:"Цифровий"},
+        {n:"Роутер", ic:"📡", f:"Цифровий"},
+        {n:"Рулетка", ic:"📏", f:"Нецифровий"},
+        {n:"Ртутний термометр", ic:"🌡️", f:"Нецифровий"}
+      ]
+    });
+  }
+
+  function round2(){
+    mascot.textContent = "🛸";
+    pickRound({
+      task: "Що робить пароль надійним? 🔐",
+      hint: "Механіка друга: <b>познач правильні</b>. Тепер веду я — дрон <b>Байт</b> (у кожного класу свій персонаж).",
+      win: "Чудово! Це була механіка «познач правильні» 🎯",
+      items: [
+        {n:"Довгий — від 12 знаків", ic:"📏", ok:true},
+        {n:"Літери, цифри й знаки разом", ic:"🔠", ok:true},
+        {n:"Різний для різних сайтів", ic:"🗂️", ok:true},
+        {n:"Його не знає ніхто, крім тебе", ic:"🤫", ok:true},
+        {n:"Дата народження", ic:"🎂", ok:false, s:"її легко дізнатися"},
+        {n:"123456", ic:"🔢", ok:false, s:"це перший пароль, який перебирають"},
+        {n:"Один пароль на всі сайти", ic:"♻️", ok:false, s:"зламають один — відкриють усі"}
+      ]
+    });
+  }
+
+  function round3(){
+    mascot.textContent = "🛸";
+    orderRound({
+      task: "Розстав одиниці від найменшої до найбільшої 1 → 4",
+      hint: "Механіка третя: <b>розставити по порядку</b>. Натискай від найменшої одиниці.",
+      win: "Точно! Це була механіка «по порядку» 🏁",
+      steps: [
+        {i:0, n:"біт", ic:"•"},
+        {i:1, n:"байт", ic:"▪"},
+        {i:2, n:"кілобайт", ic:"◼"},
+        {i:3, n:"мегабайт", ic:"⬛"}
+      ]
+    });
+  }
+
+  // ═════════════════ Фінал — оцінка ═════════════════
+  function finale(){
+    dotsEl.querySelectorAll("i").forEach(d => d.className = "done");
+    const earned = Math.max(0, MAX - mistakes);
+    const pct = Math.round(100 * earned / MAX);
+    const grade = pctToGrade(pct);
+    mascot.textContent = "🛸";
+    bit("Готово! Ось що учень бачить у кінці гри 🎉");
+    stage.innerHTML = `
+      <div class="win">
+        <div class="big">🏆</div>
+        <h2>Гру пройдено!</h2>
+        <div class="score">⭐ ${earned} / ${MAX} · помилок: ${mistakes}</div>
+        <div class="score" style="color:var(--good)">Оцінка: ${grade} / 12</div>
+        <p>Це <b>та сама шкала</b>, що в реальних іграх, тому бали різних ігор порівнянні.</p>
+        <div class="note"><b>У справжній грі</b> цей бал рахує <b>сервер</b>, а не браузер: результат
+          прив'язується до учня за кодом, зберігається разом із номером спроби — і його не можна
+          «підправити» у вкладці розробника. <b>У демо нічого не збереглося.</b></div>
+      </div>`;
+    setActions(`<button class="btn" id="feat">Що вміє сайт →</button>
+                <button class="btn ghost" id="again">Пройти ще раз ↺</button>`);
+    $("feat").onclick = () => screenFeatures(false);
+    $("again").onclick = () => { stars = 0; mistakes = 0; round = 0; starsEl.textContent = 0; paintDots(); rounds[0](); };
+  }
+
+  // ═════════════════ ЕКРАН — можливості ═════════════════
+  function screenFeatures(fromIntro){
+    dotsEl.style.visibility = "hidden";
+    mascot.textContent = "🤖";
+    bit("А тепер — коротко про те, <b>що вміє сайт</b>.");
+    stage.innerHTML = `
+      <div class="intro">
+        <div class="sect">Для учня</div>
+        <ul class="feat">
+          <li><span class="ic">🔑</span><span><b>Вхід за особистим кодом</b> — без реєстрації, без пароля, без email</span></li>
+          <li><span class="ic">📱</span><span><b>Будь-який пристрій</b> — телефон, планшет, ноутбук; нічого встановлювати не треба</span></li>
+          <li><span class="ic">🌗</span><span><b>Світла й темна тема</b>, великі кнопки, керування з клавіатури</span></li>
+          <li><span class="ic">💪</span><span><b>Помилка не завершує гру</b> — вона лише знімає один бал, тому не страшно спробувати</span></li>
+          <li><span class="ic">🔁</span><span><b>Дві спроби</b> (кількість задає вчитель) — зараховується <b>краща</b></span></li>
+        </ul>
+
+        <div class="sect">Для вчителя</div>
+        <ul class="feat">
+          <li><span class="ic">🧮</span><span><b>Оцінку 1–12 рахує сервер</b> за єдиною шкалою — бали різних ігор порівнянні</span></li>
+          <li><span class="ic">🗂️</span><span><b>Адмін-панель:</b> список учнів, генерація кодів на клас, усі результати зі спробами</span></li>
+          <li><span class="ic">📄</span><span><b>Найкраща спроба</b> кожного учня — готова до перенесення в <b>Мрію</b></span></li>
+          <li><span class="ic">🎯</span><span><b>Ігри під програму</b> — кожна закриває конкретні групи результатів (ГР) із КТП</span></li>
+          <li><span class="ic">🤖</span><span><b>Свій персонаж на клас</b> — робот Біт у 5-му, дрон Байт у 6-му</span></li>
+          <li><span class="ic">🧩</span><span><b>Рушій перевикористовується:</b> нова гра — це новий зміст, а не новий код</span></li>
+        </ul>
+
+        <div class="sect">Приватність і надійність</div>
+        <ul class="feat">
+          <li><span class="ic">🔒</span><span><b>У публічному репозиторії немає списків дітей</b> — імена та класи лише в базі вчителя</span></li>
+          <li><span class="ic">👤</span><span><b>Учитель бачить лише свої дані</b> — це забезпечує база, а не сторінка</span></li>
+          <li><span class="ic">📉</span><span><b>Мінімум даних:</b> ім'я, клас, гра, бал, спроба, час — і нічого зайвого</span></li>
+          <li><span class="ic">📵</span><span><b>Коди роздаються приватно</b>; код можна вимкнути й видати новий</span></li>
+        </ul>
+
+        <div class="note">Чесно про межі: логіка раундів працює у браузері учня, тож це оцінка
+          <b>«за активність і результат»</b>, а не олімпіадна контрольна. На сервері захищено те, що
+          важливо: <b>сам бал</b>, <b>ліміт спроб</b> і <b>привʼязка результату до учня</b>.</div>
+      </div>`;
+    setActions(fromIntro
+      ? `<button class="btn" id="play">Спробувати гру →</button><button class="btn ghost" id="home">На початок</button>`
+      : `<button class="btn ghost" id="home">На початок</button>`);
+    const play = $("play"); if (play) play.onclick = screenLogin;
+    $("home").onclick = () => { stars = 0; mistakes = 0; starsEl.textContent = 0; screenIntro(); };
+  }
+
+  // ═════════════════ Керування раундами ═════════════════
+  const rounds = [round1, round2, round3];
+  function lockNext(){ setActions(`<button class="btn" id="next" disabled>Виконуй завдання…</button>`); }
+  function done(){
+    const last = round >= TOTAL_ROUNDS - 1;
+    setActions(`<button class="btn" id="next">${last ? "Оцінка 🏁" : "Далі →"}</button>`);
+    $("next").onclick = () => {
+      round++;
+      if (round >= TOTAL_ROUNDS){ finale(); return; }
+      paintDots(); rounds[round]();
+    };
+  }
+
+  screenIntro();
+})();
+</script>
+</body>
+</html>
