@@ -1,41 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Робот Біт">
-  <!-- Робот Біт — наскрізний персонаж 5-А, перемальований у гамі сайту.
-       Персонажа НЕ змінено: той самий робот, лише сучасніша подача.
-       Написано кодом: чіткий і на 24 px, і на 512 px, працює у світлій
-       і темній темі, важить менше кілобайта. -->
+  <!-- Робот Біт — наскрізний персонаж 5-А. Варіант D: графіт зі світним візором.
+       Персонажа НЕ змінено — той самий робот, лише сучасніша подача.
+       Написано кодом: чіткий і на 24 px, і на 512 px, важить ~1,6 КБ.
+
+       ⭐ Палітра реагує на тему: на темному тлі графіт СВІТЛІШАЄ, а обідок
+       голови стає помітнішим — інакше сірий робот тонув би у тлі.
+       ⚠️ Обмеження: коли svg вставлено через <img>, media-запит слухає
+       НАСТРОЙКУ СИСТЕМИ, а не перемикач теми на сайті. -->
+  <style>
+    :root{
+      --h1:#9aa6b8; --h2:#6b7689; --h3:#454f60;
+      --e1:#8b96a8; --e2:#5a6474;
+      --visor:#0a0c11; --eye:#ff7a3c; --ant:#7c5cff;
+      --mouth:#eef2f7; --rim:rgba(255,255,255,.14);
+    }
+    @media (prefers-color-scheme:dark){
+      :root{
+        --h1:#b8c2d1; --h2:#8d98aa; --h3:#5d6777;
+        --e1:#a9b3c2; --e2:#717c8d;
+        --rim:rgba(255,255,255,.30);
+      }
+    }
+    #s1{stop-color:var(--h1)} #s2{stop-color:var(--h2)} #s3{stop-color:var(--h3)}
+    #t1{stop-color:var(--e1)} #t2{stop-color:var(--e2)}
+    .metal{fill:url(#ear)}
+    .head{fill:url(#bg); stroke:var(--rim); stroke-width:1}
+    .visor{fill:var(--visor)}
+    .eye{fill:var(--eye)}
+    .ant{fill:var(--ant)}
+    .mouth{stroke:var(--mouth)}
+  </style>
   <defs>
     <linearGradient id="bg" x1="14" y1="12" x2="50" y2="48" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff7a2f"/>
-      <stop offset=".55" stop-color="#ff5f8a"/>
-      <stop offset="1" stop-color="#7c5cff"/>
+      <stop id="s1" offset="0"/><stop id="s2" offset=".55"/><stop id="s3" offset="1"/>
     </linearGradient>
     <linearGradient id="ear" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ff5f8a"/>
-      <stop offset="1" stop-color="#7c5cff"/>
+      <stop id="t1" offset="0"/><stop id="t2" offset="1"/>
     </linearGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
 
   <!-- антена -->
   <path d="M32 13V8" stroke="url(#ear)" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="32" cy="5.5" r="3.5" fill="#ff7a2f"/>
+  <circle class="ant" cx="32" cy="5.5" r="3.5"/>
 
   <!-- «вуха» -->
-  <rect x="6.5" y="26" width="5" height="12" rx="2.5" fill="url(#ear)"/>
-  <rect x="52.5" y="26" width="5" height="12" rx="2.5" fill="url(#ear)"/>
+  <rect class="metal" x="6.5" y="26" width="5" height="12" rx="2.5"/>
+  <rect class="metal" x="52.5" y="26" width="5" height="12" rx="2.5"/>
 
   <!-- голова -->
-  <rect x="13" y="13" width="38" height="34" rx="12" fill="url(#bg)"/>
+  <rect class="head" x="13" y="13" width="38" height="34" rx="12"/>
 
   <!-- візор: одне темне вікно замість двох окремих очей — так читається
        навіть на 24 px, і саме так виглядають сучасні іконки роботів -->
-  <rect x="19" y="21" width="26" height="14" rx="7" fill="#0f1017" opacity=".9"/>
-  <circle cx="26.5" cy="28" r="3.2" fill="#7fe9ff"/>
-  <circle cx="37.5" cy="28" r="3.2" fill="#7fe9ff"/>
+  <rect class="visor" x="19" y="21" width="26" height="14" rx="7" opacity=".95"/>
+  <g filter="url(#glow)">
+    <circle class="eye" cx="26.5" cy="28" r="3.2"/>
+    <circle class="eye" cx="37.5" cy="28" r="3.2"/>
+  </g>
 
   <!-- усмішка: дуга, а не планка — Біт персонаж 5-А, він мусить бути дружнім -->
-  <path d="M26 39.6q6 4.6 12 0" fill="none" stroke="#fff" stroke-width="3"
+  <path class="mouth" d="M26 39.6q6 4.6 12 0" fill="none" stroke-width="3"
         stroke-linecap="round" opacity=".9"/>
 
   <!-- плечі -->
-  <path d="M20 52c0-3.3 2.7-6 6-6h12c3.3 0 6 2.7 6 6v3H20z" fill="url(#ear)" opacity=".9"/>
+  <path class="metal" d="M20 52c0-3.3 2.7-6 6-6h12c3.3 0 6 2.7 6 6v3H20z" opacity=".92"/>
 </svg>

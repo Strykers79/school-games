@@ -607,25 +607,36 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   </div>
 
   <!-- 6. ЗНАК РОБОТА БІТА -->
-  <div class="sectlabel">6 · Робот Біт (персонаж 5-А) — вибір кольору</div>
+  <div class="sectlabel">6 · Робот Біт (персонаж 5-А) — графіт зі світним візором</div>
   <div class="card card-pad">
+    <div style="display:flex;gap:var(--s5);align-items:center;flex-wrap:wrap;margin-bottom:var(--s5)">
+      <img src="bit.svg" alt="Робот Біт" width="96" height="96">
+      <img src="bit.svg" alt="" width="56" height="56">
+      <img src="bit.svg" alt="" width="32" height="32">
+      <img src="bit.svg" alt="" width="24" height="24">
+      <div style="flex:1;min-width:240px;color:var(--ink-2);font-size:var(--fs-sm)">
+        Той самий персонаж, а не новий: ⭐ CLAUDE.md забороняє міняти наскрізного героя
+        посеред курсу. Змінилася <b>подача</b> — геометрія, візор замість двох окремих
+        очей, дуга-усмішка. 1,6 КБ, чіткий і на <b>24 px</b>, і на 512.
+      </div>
+    </div>
+
     <p class="lede" style="text-align:left">
-      Той самий персонаж, а не новий: ⭐ CLAUDE.md забороняє міняти наскрізного героя
-      посеред курсу. Змінилася <b>подача</b> — геометрія, візор замість двох окремих
-      очей, дуга-усмішка. Написано кодом, тому чіткий і на <b>24 px</b>, і на 512.
+      ⭐ <b>Графіт вибрано свідомо:</b> у нього <b>не той градієнт, що в зірочці favicon</b>,
+      тому персонаж і знак сайту на одній сторінці не конкурують. Колір сайту лишився
+      лише в <b>світінні візора</b> й на антені — як акцент.
+    </p>
+    <p class="lede" style="text-align:left">
+      ⚠️ <b>Слабке місце графіту я закрив:</b> сірий робот на темному тлі тонув. Тому
+      палітра реагує на тему — на темному графіт <b>світлішає</b>, а обідок голови стає
+      помітнішим. ⚠️ Але коли SVG вставлено через <code>&lt;img&gt;</code>, media-запит
+      слухає <b>настройку системи</b>, а не перемикач теми на сайті: перевіряйте, змінивши
+      тему в Windows.
     </p>
 
-    <div class="tiles" id="bits" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))"></div>
-
-    <p class="lede" style="text-align:left;margin:var(--s5) 0 var(--s3)">
-      ⚠️ <b>Головна проблема варіанта A</b> — у нього <b>той самий градієнт, що в зірочці
-      favicon</b>. На одній сторінці вони конкурують, і робот читається як логотип сайту,
-      а не як персонаж. Решта три від зірочки відрізняються.
-    </p>
-
-    <p class="task" style="margin-bottom:var(--s3)">Де він житиме в новому дизайні</p>
+    <p class="task" style="margin:var(--s5) 0 var(--s3)">Де він житиме в новому дизайні</p>
     <div class="hint" style="align-items:center">
-      <img src="bit-c.svg" alt="" width="30" height="30" style="flex:none">
+      <img src="bit.svg" alt="" width="30" height="30" style="flex:none">
       <span>⭐ У підказці <b>замість 💡</b> — тоді Біт не просто прикраса, а той, хто
         підказує. Це його роль в іграх 5-А і зараз.</span>
     </div>
@@ -807,24 +818,6 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   };
   $('chk').onclick = check;
   $('num').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); check(); } };
-
-  /* ── варіанти кольору робота ── */
-  const BITS = [
-    {f:'bit-a.svg', n:'A · гама сайту', s:'як зараз. ⚠️ той самий градієнт, що в зірочці favicon'},
-    {f:'bit-b.svg', n:'B · холодний тех', s:'синьо-фіалковий, оранжева антена як акцент'},
-    {f:'bit-c.svg', n:'C · бірюза + оранж', s:'⭐ найдружніший і найдалі від зірочки'},
-    {f:'bit-d.svg', n:'D · графіт', s:'найсучасніший робот. ⚠️ на темному тлі майже тоне'}
-  ];
-  BITS.forEach((b, i) => {
-    const el = document.createElement('div');
-    el.className = 'tile'; el.style.setProperty('--i', i);
-    el.style.cursor = 'default'; el.style.alignItems = 'center';
-    el.innerHTML = '<img src="' + b.f + '" alt="" width="64" height="64" style="flex:none">' +
-      '<span><b>' + b.n + '</b><br><span style="color:var(--ink-3);font-size:var(--fs-xs)">' +
-      b.s + '</span></span>' +
-      '<img src="' + b.f + '" alt="" width="24" height="24" style="flex:none;margin-left:auto">';
-    $('bits').appendChild(el);
-  });
 
   /* ── фінал ── */
   const countUp = to => {
