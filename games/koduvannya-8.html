@@ -78,6 +78,13 @@
     background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
     display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
   .tile .ic{font-size:22px; line-height:1}
+  /* маркер вибору в раундах «познач правильні»: однаковий для ВСІХ плиток,
+     щоб іконка не підказувала, де правильна відповідь */
+  .tile .pbox{flex:none; width:22px; height:22px; border-radius:6px; display:grid;
+    place-items:center; border:2px solid var(--border); background:var(--surface);
+    font-size:14px; font-weight:800; line-height:1; color:transparent; transition:.15s}
+  .tile.ok .pbox{border-color:var(--good); background:var(--good); color:#fff}
+  .tile.err .pbox{border-color:var(--bad); background:var(--bad); color:#fff}
   .tile:hover{border-color:var(--accent)}
   .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
   .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
@@ -275,12 +282,18 @@
     const pool=$("pool");
     shuffle(cfg.items.slice()).forEach(it=>{
       const b=document.createElement("button"); b.className="tile"; b.style.minWidth="210px";
-      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      // ⚠️ Іконка НЕ показує правильність: у всіх плиток однаковий порожній
+      //    квадратик. Галочка з'являється лише після правильного вибору.
+      //    it.ic у даних лишено, але свідомо НЕ рендериться — інакше
+      //    учень набирав би повний бал, клікаючи по ✅ й не читаючи тексту.
+      b.innerHTML=`<span class="pbox" aria-hidden="true">\u2713</span>${it.n}`;
       b.onclick=()=>{
         if(b.dataset.done)return;
         if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
           bit("Так, ця пара правильна \u2705"); if(found===total){ bit(cfg.win); done(); } }
-        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+        else { const bx=b.querySelector(".pbox"); b.classList.add("err");
+          if(bx) bx.textContent="\u2715";
+          setTimeout(()=>{ b.classList.remove("err"); if(bx) bx.textContent="\u2713"; },900);
           mistakes++; bit(`Ні \u2014 <b>${it.n}</b>: ${it.s}.`); }
       };
       pool.appendChild(b);
@@ -318,13 +331,13 @@
       hint:"Правильних пар <b>чотири</b>. Пам\u2019ятай: нулі дописують <b>злiва</b>, і в байті рівно вісім цифр.",
       win:"Раунд 2 пройдено. Ти бачиш підміну в записі байта \u{1F3AF}",
       items:[
-        {n:"5 = 00000101",   ic:"\u2705", ok:true},
-        {n:"13 = 00001101",  ic:"\u2705", ok:true},
-        {n:"20 = 00010100",  ic:"\u2705", ok:true},
-        {n:"63 = 00111111",  ic:"\u2705", ok:true},
-        {n:"5 = 10100000",   ic:"\u2753", ok:false, s:"нулі дописано праворуч, і це вже 160, а не 5"},
-        {n:"100 = 01100101", ic:"\u2753", ok:false, s:"64+32+4+1 = 101, а не 100"},
-        {n:"18 = 00011000",  ic:"\u2753", ok:false, s:"16+8 = 24, а не 18"}
+        {n:"5 = 00000101", ok:true},
+        {n:"13 = 00001101", ok:true},
+        {n:"20 = 00010100", ok:true},
+        {n:"63 = 00111111", ok:true},
+        {n:"5 = 10100000", ok:false, s:"нулі дописано праворуч, і це вже 160, а не 5"},
+        {n:"100 = 01100101", ok:false, s:"64+32+4+1 = 101, а не 100"},
+        {n:"18 = 00011000", ok:false, s:"16+8 = 24, а не 18"}
       ]
     });
   }

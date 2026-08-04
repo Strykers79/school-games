@@ -78,6 +78,13 @@
     background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
     display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
   .tile .ic{font-size:22px; line-height:1}
+  /* маркер вибору в раундах «познач правильні»: однаковий для ВСІХ плиток,
+     щоб іконка не підказувала, де правильна відповідь */
+  .tile .pbox{flex:none; width:22px; height:22px; border-radius:6px; display:grid;
+    place-items:center; border:2px solid var(--border); background:var(--surface);
+    font-size:14px; font-weight:800; line-height:1; color:transparent; transition:.15s}
+  .tile.ok .pbox{border-color:var(--good); background:var(--good); color:#fff}
+  .tile.err .pbox{border-color:var(--bad); background:var(--bad); color:#fff}
   .tile:hover{border-color:var(--accent)}
   .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
   .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
@@ -257,12 +264,18 @@
     const pool=$("pool");
     shuffle(cfg.items.slice()).forEach(it=>{
       const b=document.createElement("button"); b.className="tile"; b.style.minWidth="260px";
-      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      // ⚠️ Іконка НЕ показує правильність: у всіх плиток однаковий порожній
+      //    квадратик. Галочка з'являється лише після правильного вибору.
+      //    it.ic у даних лишено, але свідомо НЕ рендериться — інакше
+      //    учень набирав би повний бал, клікаючи по ✅ й не читаючи тексту.
+      b.innerHTML=`<span class="pbox" aria-hidden="true">\u2713</span>${it.n}`;
       b.onclick=()=>{
         if(b.dataset.done)return;
         if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
           bit("Так, правильно ✅"); if(found===total){ bit(cfg.win); done(); } }
-        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+        else { const bx=b.querySelector(".pbox"); b.classList.add("err");
+          if(bx) bx.textContent="\u2715";
+          setTimeout(()=>{ b.classList.remove("err"); if(bx) bx.textContent="\u2713"; },900);
           mistakes++; bit(`Ні — ${it.s}.`); }
       };
       pool.appendChild(b);
@@ -423,15 +436,15 @@
       hint:"Останній раунд. Правильних — <b>чотири</b>. Три інші звучать переконливо, але <b>неправильні</b>.",
       win:"Усі п’ять раундів пройдено! Тисни «Фінал» \u{1F3C1}",
       items:[
-        {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів стає більше", ic:"✅", ok:true},
-        {n:"РІЗНІ фільтри з’єднані через and — результатів стає менше", ic:"✅", ok:true},
-        {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ic:"✅", ok:true},
-        {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ic:"✅", ok:true},
-        {n:"Чим більше галочок поставиш, тим більше знайдеш", ic:"❓", ok:false,
+        {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів стає більше", ok:true},
+        {n:"РІЗНІ фільтри з’єднані через and — результатів стає менше", ok:true},
+        {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ok:true},
+        {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ok:true},
+        {n:"Чим більше галочок поставиш, тим більше знайдеш", ok:false,
          s:"⚠️ залежить, <b>де</b> галочка: у межах одного фільтра — більше, а <b>новий</b> фільтр — менше"},
-        {n:"Мінус перед словом у пошуку розширює пошук", ic:"❓", ok:false,
+        {n:"Мінус перед словом у пошуку розширює пошук", ok:false,
          s:"навпаки: <code>-слово</code> — це <b>not</b>, воно <b>виключає</b> сторінки з цим словом"},
-        {n:"Галочка «Запам’ятати мене» на чужому комп’ютері безпечна, якщо закрити вкладку", ic:"❓", ok:false,
+        {n:"Галочка «Запам’ятати мене» на чужому комп’ютері безпечна, якщо закрити вкладку", ok:false,
          s:"⚠️ ні: ця логічна змінна лишається <b>True</b> і <b>після тебе</b> — разом із доступом до акаунта"}
       ]
     });

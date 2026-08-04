@@ -78,6 +78,13 @@
     background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
     display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
   .tile .ic{font-size:22px; line-height:1}
+  /* маркер вибору в раундах «познач правильні»: однаковий для ВСІХ плиток,
+     щоб іконка не підказувала, де правильна відповідь */
+  .tile .pbox{flex:none; width:22px; height:22px; border-radius:6px; display:grid;
+    place-items:center; border:2px solid var(--border); background:var(--surface);
+    font-size:14px; font-weight:800; line-height:1; color:transparent; transition:.15s}
+  .tile.ok .pbox{border-color:var(--good); background:var(--good); color:#fff}
+  .tile.err .pbox{border-color:var(--bad); background:var(--bad); color:#fff}
   .tile:hover{border-color:var(--accent)}
   .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
   .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
@@ -250,12 +257,18 @@
     const pool=$("pool");
     shuffle(cfg.items.slice()).forEach(it=>{
       const b=document.createElement("button"); b.className="tile"; b.style.minWidth="230px";
-      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      // ⚠️ Іконка НЕ показує правильність: у всіх плиток однаковий порожній
+      //    квадратик. Галочка з'являється лише після правильного вибору.
+      //    it.ic у даних лишено, але свідомо НЕ рендериться — інакше
+      //    учень набирав би повний бал, клікаючи по ✅ й не читаючи тексту.
+      b.innerHTML=`<span class="pbox" aria-hidden="true">\u2713</span>${it.n}`;
       b.onclick=()=>{
         if(b.dataset.done)return;
         if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
           bit("Так, правильно \u2705"); if(found===total){ bit(cfg.win); done(); } }
-        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+        else { const bx=b.querySelector(".pbox"); b.classList.add("err");
+          if(bx) bx.textContent="\u2715";
+          setTimeout(()=>{ b.classList.remove("err"); if(bx) bx.textContent="\u2713"; },900);
           mistakes++; bit(`Ні \u2014 ${it.s}.`); }
       };
       pool.appendChild(b);
@@ -270,15 +283,15 @@
       hint:"Правильних \u2014 <b>чотири</b>. Решта три \u2014 нормальні речі, а не обман. Читай уважно.",
       win:"Раунд 1 пройдено. Тебе такою рекламою не візьмеш \u{1F6E1}",
       items:[
-        {n:"«Просканували ваш ПК» \u2014 ще до встановлення", ic:"\u{1F6A9}", ok:true},
-        {n:"Точне число «1247 помилок» без перевірки",        ic:"\u{1F6A9}", ok:true},
-        {n:"Обіцянка «прискорити у 5 разів»",                 ic:"\u{1F6A9}", ok:true},
-        {n:"Таймер «залишилось 2 хвилини»",                   ic:"\u{1F6A9}", ok:true},
-        {n:"Програма має офіційний сайт з описом",            ic:"\u2753", ok:false,
+        {n:"«Просканували ваш ПК» \u2014 ще до встановлення", ok:true},
+        {n:"Точне число «1247 помилок» без перевірки", ok:true},
+        {n:"Обіцянка «прискорити у 5 разів»", ok:true},
+        {n:"Таймер «залишилось 2 хвилини»", ok:true},
+        {n:"Програма має офіційний сайт з описом", ok:false,
          s:"це якраз <b>ознака нормальної</b> програми: ми самі шукаємо офіційний сайт"},
-        {n:"Програма показує модель процесора й температуру", ic:"\u2753", ok:false,
+        {n:"Програма показує модель процесора й температуру", ok:false,
          s:"це робить справжня діагностика, наприклад CPU-Z. Нічого поганого"},
-        {n:"Windows сам пропонує «Засіб усунення неполадок»", ic:"\u2753", ok:false,
+        {n:"Windows сам пропонує «Засіб усунення неполадок»", ok:false,
          s:"це <b>вбудований</b> інструмент Windows, безкоштовний і безпечний"}
       ]
     });
@@ -315,15 +328,15 @@
       hint:"Правильних \u2014 <b>чотири</b>. Три інші \u2014 те, чого робити не можна, навіть якщо технічно виходить.",
       win:"Раунд 3 пройдено. Це найважливіший раунд роботи \u{1F91D}",
       items:[
-        {n:"Сфотографувати умову задачі й розпізнати текст (OCR)", ic:"\u2705", ok:true},
-        {n:"Перевірити замочок https:// перед уведенням пароля",   ic:"\u2705", ok:true},
-        {n:"Зробити резервну копію своїх файлів на інший носій",   ic:"\u2705", ok:true},
-        {n:"Написати вчителю, що не розумієш завдання",            ic:"\u2705", ok:true},
-        {n:"Прочитати переписку однокласника, якщо телефон відкритий", ic:"\u{1F6AB}", ok:false,
+        {n:"Сфотографувати умову задачі й розпізнати текст (OCR)", ok:true},
+        {n:"Перевірити замочок https:// перед уведенням пароля", ok:true},
+        {n:"Зробити резервну копію своїх файлів на інший носій", ok:true},
+        {n:"Написати вчителю, що не розумієш завдання", ok:true},
+        {n:"Прочитати переписку однокласника, якщо телефон відкритий", ok:false,
          s:"уміти щось технічно \u2014 <b>не те саме</b>, що мати на це право. Це чуже"},
-        {n:"Відкрити архів із паролем від незнайомця",             ic:"\u{1F6AB}", ok:false,
+        {n:"Відкрити архів із паролем від незнайомця", ok:false,
          s:"пароль в архіві ставлять, щоб антивірус не зазирнув усередину"},
-        {n:"Скопіювати чужий код і здати як свій",                 ic:"\u{1F6AB}", ok:false,
+        {n:"Скопіювати чужий код і здати як свій", ok:false,
          s:"списаний код видно одразу, і він нічому не вчить. Краще спитати"}
       ]
     });
@@ -359,15 +372,15 @@
       hint:"Останній раунд. Правильних \u2014 <b>чотири</b>.",
       win:"Усі п\u2019ять раундів пройдено! Тисни «Фінал» \u{1F3C1}",
       items:[
-        {n:"Відкрити банківський рахунок",                     ic:"\u{1F3E6}", ok:true},
-        {n:"Сплатити за комунальні послуги",                   ic:"\u{1F4B3}", ok:true},
-        {n:"Надіслати звіт із електронним підписом",           ic:"\u270D",    ok:true},
-        {n:"Подивитися реєстр земельних ресурсів",             ic:"\u{1F5FE}", ok:true},
-        {n:"Отримати шкільну оцінку без контрольної",          ic:"\u2753", ok:false,
+        {n:"Відкрити банківський рахунок", ok:true},
+        {n:"Сплатити за комунальні послуги", ok:true},
+        {n:"Надіслати звіт із електронним підписом", ok:true},
+        {n:"Подивитися реєстр земельних ресурсів", ok:true},
+        {n:"Отримати шкільну оцінку без контрольної", ok:false,
          s:"це не державна послуга \u{1F642} Оцінку дає робота, а не застосунок"},
-        {n:"Змінити закон",                                    ic:"\u2753", ok:false,
+        {n:"Змінити закон", ok:false,
          s:"закони ухвалює Верховна Рада, а не застосунок"},
-        {n:"Отримати ПАПЕРОВИЙ гарантійний талон поштою",      ic:"\u2753", ok:false,
+        {n:"Отримати ПАПЕРОВИЙ гарантійний талон поштою", ok:false,
          s:"навпаки: сенс програми в тому, що талон <b>електронний</b>"}
       ]
     });

@@ -78,6 +78,13 @@
     background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
     display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s; max-width:100%}
   .tile .ic{font-size:22px; line-height:1}
+  /* маркер вибору в раундах «познач правильні»: однаковий для ВСІХ плиток,
+     щоб іконка не підказувала, де правильна відповідь */
+  .tile .pbox{flex:none; width:22px; height:22px; border-radius:6px; display:grid;
+    place-items:center; border:2px solid var(--border); background:var(--surface);
+    font-size:14px; font-weight:800; line-height:1; color:transparent; transition:.15s}
+  .tile.ok .pbox{border-color:var(--good); background:var(--good); color:#fff}
+  .tile.err .pbox{border-color:var(--bad); background:var(--bad); color:#fff}
   .tile:hover{border-color:var(--accent)}
   .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
   .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
@@ -249,12 +256,18 @@
     const pool=$("pool");
     shuffle(cfg.items.slice()).forEach(it=>{
       const b=document.createElement("button"); b.className="tile"; b.style.minWidth="250px";
-      b.innerHTML=`<span class="ic">${it.ic}</span>${it.n}`;
+      // ⚠️ Іконка НЕ показує правильність: у всіх плиток однаковий порожній
+      //    квадратик. Галочка з'являється лише після правильного вибору.
+      //    it.ic у даних лишено, але свідомо НЕ рендериться — інакше
+      //    учень набирав би повний бал, клікаючи по ✅ й не читаючи тексту.
+      b.innerHTML=`<span class="pbox" aria-hidden="true">\u2713</span>${it.n}`;
       b.onclick=()=>{
         if(b.dataset.done)return;
         if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); found++;
           bit("Так, правильно \u2705"); if(found===total){ bit(cfg.win); done(); } }
-        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+        else { const bx=b.querySelector(".pbox"); b.classList.add("err");
+          if(bx) bx.textContent="\u2715";
+          setTimeout(()=>{ b.classList.remove("err"); if(bx) bx.textContent="\u2713"; },900);
           mistakes++; bit(`Ні \u2014 ${it.s}.`); }
       };
       pool.appendChild(b);
@@ -269,15 +282,15 @@
       hint:"Правильних \u2014 <b>чотири</b>. Три інші \u2014 те, чого хмара НЕ робить. Читай уважно.",
       win:"Раунд 1 пройдено. Ти знаєш, за що хмара, а за що ні \u2601",
       items:[
-        {n:"Доступ до файлів із будь-якого пристрою, де є твій акаунт", ic:"\u2705", ok:true},
-        {n:"Синхронізація: змінив на телефоні \u2014 змінилося й на ноутбуці", ic:"\u2705", ok:true},
-        {n:"Не треба встановлювати програму \u2014 працює в браузері", ic:"\u2705", ok:true},
-        {n:"Кілька людей можуть працювати з одним документом", ic:"\u2705", ok:true},
-        {n:"Файли зберігаються тільки на твоєму комп\u2019ютері", ic:"\u2753", ok:false,
+        {n:"Доступ до файлів із будь-якого пристрою, де є твій акаунт", ok:true},
+        {n:"Синхронізація: змінив на телефоні \u2014 змінилося й на ноутбуці", ok:true},
+        {n:"Не треба встановлювати програму \u2014 працює в браузері", ok:true},
+        {n:"Кілька людей можуть працювати з одним документом", ok:true},
+        {n:"Файли зберігаються тільки на твоєму комп\u2019ютері", ok:false,
          s:"навпаки: вони на <b>сервері постачальника</b>. Саме тому й доступні з інших пристроїв"},
-        {n:"Працює без Інтернету так само добре", ic:"\u2753", ok:false,
+        {n:"Працює без Інтернету так само добре", ok:false,
          s:"⚠️ без Інтернету доступ <b>обмежений</b>. Це головна ціна хмари"},
-        {n:"Місце в хмарі безмежне й завжди безкоштовне", ic:"\u2753", ok:false,
+        {n:"Місце в хмарі безмежне й завжди безкоштовне", ok:false,
          s:"безкоштовний обсяг <b>обмежений</b> \u2014 далі за місце платять"}
       ]
     });
@@ -334,15 +347,15 @@
       hint:"Правильних \u2014 <b>чотири</b>. Три інші звучать переконливо, але <b>неправильні</b>.",
       win:"Раунд 4 пройдено. Показом керуєш ти, а не випадкове клацання \u25B6",
       items:[
-        {n:"Кнопка «повернення» веде туди, ЗВІДКИ ти прийшов", ic:"\u2705", ok:true},
-        {n:"Кнопки дій \u2014 це графічні примітиви, тобто фігури", ic:"\u2705", ok:true},
-        {n:"Користувацький показ НЕ видаляє слайдів із файлу", ic:"\u2705", ok:true},
-        {n:"Заборонив зміну слайдів клацанням \u2014 на кожному слайді потрібна кнопка", ic:"\u2705", ok:true},
-        {n:"Кнопка «перейти на початок» веде на попередній слайд", ic:"\u2753", ok:false,
+        {n:"Кнопка «повернення» веде туди, ЗВІДКИ ти прийшов", ok:true},
+        {n:"Кнопки дій \u2014 це графічні примітиви, тобто фігури", ok:true},
+        {n:"Користувацький показ НЕ видаляє слайдів із файлу", ok:true},
+        {n:"Заборонив зміну слайдів клацанням \u2014 на кожному слайді потрібна кнопка", ok:true},
+        {n:"Кнопка «перейти на початок» веде на попередній слайд", ok:false,
          s:"вона веде на <b>перший</b> слайд. На попередній веде «повернутися назад»"},
-        {n:"Щоб показати різні набори слайдів, треба зробити копії файлу", ic:"\u2753", ok:false,
+        {n:"Щоб показати різні набори слайдів, треба зробити копії файлу", ok:false,
          s:"⚠️ ні: <b>один файл</b> і кілька <b>користувацьких показів</b>. Слайди нікуди не зникають"},
-        {n:"Гіперпосилання й кнопки працюють і в режимі редагування", ic:"\u2753", ok:false,
+        {n:"Гіперпосилання й кнопки працюють і в режимі редагування", ok:false,
          s:"вони працюють у режимі <b>Показ слайдів</b> \u2014 натисни F5"}
       ]
     });
