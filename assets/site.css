@@ -194,6 +194,11 @@ button,input,select,textarea{font-family:inherit; font-size:inherit; color:inher
 .themebtn svg{display:block; width:18px; height:18px}
 .themebtn-fixed{position:fixed; top:var(--s4); right:var(--s4); z-index:6}
 
+.doclink{display:inline-block; margin-top:var(--s1); color:var(--ink-3);
+  font-size:var(--fs-xs); text-decoration:underline; text-underline-offset:2px;
+  text-decoration-color:var(--line-2)}
+.doclink:hover{color:var(--ink-2); text-decoration-color:var(--ink-3)}
+
 footer{text-align:center; color:var(--ink-3); font-size:var(--fs-xs); line-height:1.55}
 footer .sig,.sig{display:block; margin-top:var(--s1)}
 footer b,.sig b{color:var(--ink-2); font-weight:650}
