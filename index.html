@@ -61,9 +61,8 @@
   </footer>
 
 <script src="supabase-config.js"></script>
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+<script src="assets/db.js"></script>
+<script>
 const $ = id => document.getElementById(id);
 const msg = (t,ok)=>{ const m=$('msg'); m.textContent=t||''; m.className='msg'+(ok?' ok':''); };
 

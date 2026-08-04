@@ -11,19 +11,7 @@
 
 
 <script src="../supabase-config.js"></script>
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-  window.submitResult = async function(score){
-    try{
-      const play = JSON.parse(sessionStorage.getItem('play')||'null');
-      if(!play || !play.code) return { ok:false, error:'no session' };
-      const { data, error } = await sb.rpc('submit_result', { p_code: play.code, p_score: score });
-      if(error) return { ok:false, error: error.message };
-      return data;
-    }catch(e){ return { ok:false, error:String(e) }; }
-  };
-</script>
+<script src="../assets/db.js"></script>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml" data-head-v1>
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 </head>

@@ -141,9 +141,12 @@
   </div>
 
 <script src="supabase-config.js"></script>
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb = createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+<script src="assets/vendor/supabase-js-2.112.0.umd.js"></script>
+<script>
+// ⚠️ Локальна збірка supabase-js (assets/vendor/) — не з CDN.
+// Адмінці потрібні auth і from(), тому бібліотека тут лишається,
+// але вже своя й із зафіксованою версією.
+const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 const $ = s => document.querySelector(s);
 const el = (id) => document.getElementById(id);
 function show(id){ ['loginView','appView'].forEach(v=>el(v).style.display = v===id?'block':'none'); }
