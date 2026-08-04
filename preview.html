@@ -186,10 +186,23 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 .tile .ic{flex:none;font-size:19px;line-height:1;width:22px;text-align:center}
 .tile:hover{border-color:var(--line-2);box-shadow:var(--sh2);transform:translateY(-1px)}
 .tile:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-.tile.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--sh2)}
-.tile.ok{border-color:var(--ok-line);background:var(--ok-soft)}
+.tile.sel{border-color:var(--accent);background:var(--accent-soft);
+  box-shadow:inset 0 0 0 2px var(--accent),var(--sh2)}
+/* ⭐ ПРАВИЛЬНО: товста внутрішня рамка через inset box-shadow, а НЕ border-width —
+   інакше плитка «підросла» б на 2 px і текст стрибнув. Layout не рухається. */
+.tile.ok{border-color:var(--ok);background:var(--ok-soft);
+  box-shadow:inset 0 0 0 2.5px var(--ok),var(--sh2);font-weight:620}
 .tile.ok .ic{color:var(--ok)}
-.tile.err{border-color:var(--bad-line);background:var(--bad-soft);animation:nudge .3s}
+.tile.err{border-color:var(--bad);background:var(--bad-soft);
+  box-shadow:inset 0 0 0 2.5px var(--bad),var(--sh1);animation:nudge .3s}
+.tile.err .ic{color:var(--bad)}
+/* маркер вибору: порожня рамка → галочка. Однаковий для ВСІХ плиток,
+   щоб іконка не підказувала, де правильна відповідь */
+.tile .box{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+  border:2px solid var(--line-2);background:var(--surface);
+  font-size:14px;font-weight:800;line-height:1;color:transparent;transition:.15s}
+.tile.ok .box{border-color:var(--ok);background:var(--ok);color:#fff}
+.tile.err .box{border-color:var(--bad);background:var(--bad);color:#fff}
 .tile.gone{opacity:0;transform:scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
 .tile .tag{margin-left:auto;flex:none;font-size:var(--fs-xs);font-weight:700;color:var(--ok);
   background:var(--surface);border:1px solid var(--ok-line);padding:2px 8px;border-radius:var(--r-full)}
@@ -644,16 +657,19 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   };
 
   /* ── «познач правильні» ── */
+  /* ⚠️ УВАГА: іконки НЕ вказують на правильність. У всіх плиток однакова
+     порожня рамка; галочка з’являється ТІЛЬКИ після правильного вибору.
+     Інакше учень набирає повний бал, клікаючи по ✅ й не читаючи тексту. */
   const PICK = [
-    {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів більше", ic:"✅", ok:true},
-    {n:"РІЗНІ фільтри з’єднані через and — результатів менше", ic:"✅", ok:true},
-    {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ic:"✅", ok:true},
-    {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ic:"✅", ok:true},
-    {n:"Чим більше галочок поставиш, тим більше знайдеш", ic:"❓", ok:false,
+    {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів більше", ok:true},
+    {n:"РІЗНІ фільтри з’єднані через and — результатів менше", ok:true},
+    {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ok:true},
+    {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ok:true},
+    {n:"Чим більше галочок поставиш, тим більше знайдеш", ok:false,
      s:"залежить, <b>де</b> галочка: у межах одного фільтра — більше, а новий фільтр — менше"},
-    {n:"Мінус перед словом у пошуку розширює пошук", ic:"❓", ok:false,
+    {n:"Мінус перед словом у пошуку розширює пошук", ok:false,
      s:"навпаки: <code>-слово</code> — це <b>not</b>, воно виключає сторінки з цим словом"},
-    {n:"«Запам’ятати мене» на чужому компʼютері безпечно, якщо закрити вкладку", ic:"❓", ok:false,
+    {n:"«Запам’ятати мене» на чужому компʼютері безпечно, якщо закрити вкладку", ok:false,
      s:"ні: ця логічна змінна лишається <b>True</b> і після тебе"}
   ];
   let stars = 4, found = 0;
@@ -661,7 +677,7 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   PICK.forEach((it, i) => {
     const b = document.createElement('button');
     b.className = 'tile'; b.style.setProperty('--i', i);
-    b.innerHTML = '<span class="ic">' + it.ic + '</span><span>' + it.n + '</span>';
+    b.innerHTML = '<span class="box" aria-hidden="true">✓</span><span>' + it.n + '</span>';
     b.onclick = () => {
       if(b.dataset.done) return;
       const h = $('h1');
@@ -674,7 +690,9 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
           ? '<span>🎉</span><span>Раунд пройдено — усі чотири знайдено.</span>'
           : '<span>✅</span><span>Так, правильно. Лишилось: <b>' + (need - found) + '</b>.</span>';
       } else {
-        b.classList.add('err'); setTimeout(() => b.classList.remove('err'), 340);
+        const bx = b.querySelector('.box');
+        b.classList.add('err'); bx.textContent = '✕';
+        setTimeout(() => { b.classList.remove('err'); bx.textContent = '✓'; }, 900);
         h.className = 'hint warn';
         h.innerHTML = '<span>⚠️</span><span>Ні — ' + it.s + '.</span>';
       }
