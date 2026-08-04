@@ -173,9 +173,33 @@ async function loadStudents(){
   el('stBody').innerHTML = students.map(s=>`<tr><td>${esc(s.class_label)}</td><td>${esc(s.full_name)}</td>
     <td style="text-align:right"><button class="btn danger sm" data-del="${s.id}">видалити</button></td></tr>`).join('');
   el('stBody').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
-    if(!confirm('Видалити учня?')) return;
-    const { error } = await sb.from('students').delete().eq('id', b.dataset.del);
-    if(error){ alert(error.message); return; } await loadStudents(); fillClassFilters();
+    const id = b.dataset.del;
+    const st = students.find(s=>s.id===id);
+    const who = st ? `${st.full_name} (${st.class_label})` : 'учня';
+
+    // скільки кодів і результатів привʼязано — попереджаємо ДО видалення
+    const { count:nCodes } = await sb.from('codes')
+      .select('id', { count:'exact', head:true }).eq('student_id', id);
+    const { count:nRes } = await sb.from('results')
+      .select('id', { count:'exact', head:true }).eq('student_id', id);
+
+    let warn = `Видалити ${who}?`;
+    if(nCodes) warn += `\n\nРазом з учнем буде видалено кодів: ${nCodes}.`;
+    if(nRes)   warn += `\n\nРезультати (${nRes}) НЕ видаляються — залишаться в історії, але вже без ПІБ.`;
+    if(!confirm(warn)) return;
+
+    // 1) знімаємо привʼязку до кодів (у БД є on delete cascade, але робимо явно —
+    //    щоб працювало і в базі, де констрейнт створювався ще без cascade)
+    const { error:cErr } = await sb.from('codes').delete().eq('student_id', id);
+    if(cErr){ alert('Не вдалося видалити коди учня:\n'+cErr.message); return; }
+
+    // 2) тепер самого учня
+    const { error } = await sb.from('students').delete().eq('id', id);
+    if(error){ alert(error.message); return; }
+
+    // 3) ⚠️ ОБОВʼЯЗКОВО перемалювати і таблицю кодів, і результати —
+    //    інакше на екрані лишаються рядки вже видалених кодів
+    await loadStudents(); await loadCodes(); await loadResults();
   });
   fillClassFilters();
 }
