@@ -169,7 +169,7 @@
     </div>
   </div>
 
-  <footer>Підсумкова робота ГР 3 · «Графіка: свідомий вибір» · 6 клас<br><span class="sig" data-sig>© 2025–2026 Процюк О. К. · учитель інформатики · Харківський ліцей № 47</span></footer>
+  <footer>Підсумкова робота ГР 3 · «Графіка: свідомий вибір» · 6 клас<br><span class="sig" data-sig>© 2025–2026 Процюк О. К. · вчитель інформатики · Харківський ліцей № 47</span></footer>
 </div>
 <div class="flash" id="flash" aria-hidden="true">⭐</div>
 
@@ -407,9 +407,9 @@
         } else if(res && res.error && /вичерпано/i.test(res.error)){
           finish(localGrade, 0, "Ти вже використав усі спроби.");
         } else {
-          finish(localGrade, 0, "Не вдалося зберегти — покажи результат учителю.");
+          finish(localGrade, 0, "Не вдалося зберегти — покажи результат вчителю.");
         }
-      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти — покажи результат учителю."));
+      }).catch(()=>finish(localGrade,0,"Не вдалося зберегти — покажи результат вчителю."));
     } else {
       finish(localGrade, 0, "Демо-режим.");
     }
