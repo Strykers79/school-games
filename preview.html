@@ -207,16 +207,26 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 .tile .tag{margin-left:auto;flex:none;font-size:var(--fs-xs);font-weight:700;color:var(--ok);
   background:var(--surface);border:1px solid var(--ok-line);padding:2px 8px;border-radius:var(--r-full)}
 .targets{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:var(--s4)}
+/* межа груп: 2 px і колір від --ink-3, а не від --line-2 — інакше в темній
+   темі пунктир майже не видно (перевірено на градієнті) */
 .target{padding:var(--s4) var(--s3);cursor:pointer;text-align:center;background:var(--surface-2);
-  border:1.5px dashed var(--line-2);border-radius:var(--r-lg);
-  transition:border-color .15s,background .15s,transform .12s}
+  border:2px dashed color-mix(in srgb,var(--ink-3) 62%,transparent);border-radius:var(--r-lg);
+  transition:border-color .15s,border-style .15s,background .15s,box-shadow .15s,transform .12s}
 .target:hover{border-color:var(--accent);background:var(--surface)}
 .target:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .target .tic{font-size:26px;line-height:1}
 .target .tname{margin-top:6px;font-size:var(--fs-sm);font-weight:650}
 .target .tcnt{margin-top:2px;color:var(--ink-3);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
-.target.hit{animation:pop .3s;border-style:solid;border-color:var(--ok-line);background:var(--ok-soft)}
-.target.nope{animation:nudge .3s}
+/* ⭐ КАРТКУ ВИБРАНО → групи «загораються»: суцільна товста межа й акцентний фон.
+   Так видно, що наступний крок — натиснути групу. Товщина через inset-кільце,
+   border-width не змінюємо, щоб нічого не стрибнуло. */
+.targets.armed .target{border-style:solid;border-color:var(--accent);
+  background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent),var(--sh2)}
+.targets.armed .target:hover{transform:translateY(-2px)}
+.target.hit{animation:pop .3s;border-style:solid;border-color:var(--ok);
+  background:var(--ok-soft);box-shadow:inset 0 0 0 2.5px var(--ok),var(--sh2)}
+.target.nope{animation:nudge .3s;border-style:solid;border-color:var(--bad);
+  background:var(--bad-soft);box-shadow:inset 0 0 0 2.5px var(--bad),var(--sh1)}
 
 /* ── числовий раунд ── */
 .qbox{padding:var(--s5);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg)}
@@ -718,6 +728,7 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
       if(b.classList.contains('gone')) return;
       [...sp.children].forEach(x => x.classList.remove('sel'));
       b.classList.add('sel'); sel = {it:it, el:b};
+      $('sorttargets').classList.add('armed');   // ⭐ групи загоряються
     };
     sp.appendChild(b);
   });
@@ -731,9 +742,11 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
       if(!sel){ d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320); return; }
       if(sel.it.f === g.k){
         sel.el.classList.add('gone'); cnt++; d.querySelector('.tcnt').textContent = cnt;
-        d.classList.add('hit'); setTimeout(() => d.classList.remove('hit'), 320); sel = null;
+        d.classList.add('hit'); setTimeout(() => d.classList.remove('hit'), 700);
+        sel = null;
+        $('sorttargets').classList.remove('armed');   // картки більше не вибрано — гасимо
       } else {
-        d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320);
+        d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 700);
       }
     };
     d.onclick = act;
