@@ -1,51 +1,37 @@
 <!doctype html>
-<html lang="uk">
+<html lang="uk" data-style="min">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Прототип дизайну — сайт навчальних ігор</title>
+<title>Прототипи дизайну — сайт навчальних ігор</title>
 <meta name="robots" content="noindex">
 <style>
-/* ══════════════════════════════════════════════════════════════
-   ТОКЕНИ. Один шар змінних — щоб потім розкотити на 11 файлів
-   без «підганяння на місці».
-   ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════
+   БАЗА. Однакова розмітка для всіх чотирьох варіантів — щоб порівняння
+   було честним. Варіант перемикається атрибутом data-style на <html>.
+   ══════════════════════════════════════════════════════════════════════ */
 :root{
-  /* Шрифт: БЕЗ зовнішніх запитів. На Windows дає Segoe UI Variable,
-     на Mac — SF Pro. Ніякого стрибка тексту на слабкому інтернеті. */
   --font:"Segoe UI Variable Display","Segoe UI Variable Text",system-ui,
          -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace;
 
-  /* Розміри — плавні, без стрибків між телефоном і ноутбуком */
   --fs-hero:clamp(25px,5.2vw,34px);
   --fs-h2:clamp(18px,3.4vw,22px);
   --fs-body:clamp(15px,2.5vw,16px);
   --fs-sm:13.5px;
   --fs-xs:12px;
 
-  /* Простір: крок 4. Один ритм на весь сайт */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:44px;
-
   --r-sm:10px; --r-md:14px; --r-lg:20px; --r-full:999px;
 
-  /* Нейтралі: 3 рівні тексту замість колишніх 2 */
-  --bg:#f6f7f9;
-  --bg-2:#ffffff;
-  --surface:#ffffff;
-  --surface-2:#f9fafb;
-  --line:#e7eaef;          /* волосяна межа */
-  --line-2:#d6dbe3;        /* активна межа */
-  --ink:#0f172a;           /* головний текст */
-  --ink-2:#4a5568;         /* другорядний */
-  --ink-3:#8b95a7;         /* підписи, футер */
+  --bg:#f6f7f9; --bg-2:#ffffff;
+  --surface:#ffffff; --surface-2:#f9fafb;
+  --line:#e7eaef; --line-2:#d6dbe3;
+  --ink:#0f172a; --ink-2:#4a5568; --ink-3:#8b95a7;
 
-  /* Акценти: оранжевий — ТІЛЬКИ головна дія і прогрес */
-  --brand:#2f6fe0;
-  --brand-ring:color-mix(in srgb,var(--brand) 18%,transparent);
-  --accent:#e2590c;
-  --accent-2:#c74a06;
-  --accent-soft:#fff3ec;
+  --brand:#2f6fe0; --brand-ring:color-mix(in srgb,var(--brand) 18%,transparent);
+  --accent:#e2590c; --accent-2:#c74a06; --accent-soft:#fff3ec;
+  --accent-ink:#ffffff;
   --ok:#0f9d68; --ok-soft:#eefbf4; --ok-line:#a7e3c6;
   --bad:#d92d20; --bad-soft:#fef4f3; --bad-line:#f3b5b0;
   --star:#eaa207;
@@ -53,12 +39,19 @@
   --sh1:0 1px 2px rgba(15,23,42,.05);
   --sh2:0 4px 14px -6px rgba(15,23,42,.14), 0 1px 3px rgba(15,23,42,.05);
   --sh3:0 18px 40px -20px rgba(15,23,42,.28);
+
+  --card-bg:var(--surface);
+  --card-border:1px solid var(--line);
+  --card-shadow:var(--sh2);
+  --card-radius:var(--r-lg);
+  --blur:none;
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#0a0c11; --bg-2:#0f1218; --surface:#14181f; --surface-2:#191e27;
   --line:#242b36; --line-2:#333c4a;
   --ink:#e8ecf3; --ink-2:#a6b0c0; --ink-3:#727d8e;
   --brand:#5b93f5; --accent:#ff8b4d; --accent-2:#ffa470; --accent-soft:#2a1a10;
+  --accent-ink:#1a0f06;
   --ok:#3ed597; --ok-soft:#0e2a20; --ok-line:#1f5943;
   --bad:#ff7a70; --bad-soft:#2c1513; --bad-line:#6b2a25;
   --star:#f5c34b;
@@ -69,8 +62,8 @@
 :root[data-theme="light"]{
   --bg:#f6f7f9;--bg-2:#fff;--surface:#fff;--surface-2:#f9fafb;--line:#e7eaef;--line-2:#d6dbe3;
   --ink:#0f172a;--ink-2:#4a5568;--ink-3:#8b95a7;--brand:#2f6fe0;--accent:#e2590c;--accent-2:#c74a06;
-  --accent-soft:#fff3ec;--ok:#0f9d68;--ok-soft:#eefbf4;--ok-line:#a7e3c6;--bad:#d92d20;
-  --bad-soft:#fef4f3;--bad-line:#f3b5b0;--star:#eaa207;
+  --accent-soft:#fff3ec;--accent-ink:#fff;--ok:#0f9d68;--ok-soft:#eefbf4;--ok-line:#a7e3c6;
+  --bad:#d92d20;--bad-soft:#fef4f3;--bad-line:#f3b5b0;--star:#eaa207;
   --sh1:0 1px 2px rgba(15,23,42,.05);
   --sh2:0 4px 14px -6px rgba(15,23,42,.14), 0 1px 3px rgba(15,23,42,.05);
   --sh3:0 18px 40px -20px rgba(15,23,42,.28);
@@ -78,151 +71,131 @@
 :root[data-theme="dark"]{
   --bg:#0a0c11;--bg-2:#0f1218;--surface:#14181f;--surface-2:#191e27;--line:#242b36;--line-2:#333c4a;
   --ink:#e8ecf3;--ink-2:#a6b0c0;--ink-3:#727d8e;--brand:#5b93f5;--accent:#ff8b4d;--accent-2:#ffa470;
-  --accent-soft:#2a1a10;--ok:#3ed597;--ok-soft:#0e2a20;--ok-line:#1f5943;--bad:#ff7a70;
-  --bad-soft:#2c1513;--bad-line:#6b2a25;--star:#f5c34b;
+  --accent-soft:#2a1a10;--accent-ink:#1a0f06;--ok:#3ed597;--ok-soft:#0e2a20;--ok-line:#1f5943;
+  --bad:#ff7a70;--bad-soft:#2c1513;--bad-line:#6b2a25;--star:#f5c34b;
   --sh1:0 1px 2px rgba(0,0,0,.4);
   --sh2:0 4px 16px -6px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.4);
   --sh3:0 18px 44px -20px rgba(0,0,0,.75);
 }
 
-/* ══════════════════════════════════════════════════════════════ */
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{
   margin:0; min-height:100vh; font-family:var(--font); color:var(--ink);
-  font-size:var(--fs-body); line-height:1.55;
-  background:var(--bg);
-  /* один делікатний градієнт згори — замість великої барвистої плями */
-  background-image:linear-gradient(180deg,var(--bg-2) 0%,var(--bg) 320px);
+  font-size:var(--fs-body); line-height:1.55; background:transparent;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-  padding:var(--s5) var(--s4) var(--s7);
+  padding:var(--s5) var(--s4) var(--s7); position:relative;
 }
-h1,h2,h3{margin:0; letter-spacing:-.021em; line-height:1.2; font-weight:650}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--bg-2) 0%,var(--bg) 340px)}
+.lab{position:relative;z-index:1;max-width:940px;margin:0 auto}
+h1,h2,h3{margin:0;letter-spacing:-.021em;line-height:1.2;font-weight:650}
 p{margin:0}
 button,input{font-family:inherit;font-size:inherit;color:inherit}
 
-/* ── службова обгортка прототипу (у справжніх файлах цього не буде) ── */
-.lab{max-width:940px;margin:0 auto}
-.labhead{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)}
+/* ── панель прототипу ── */
+.labhead{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s3)}
 .badge{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
+  color:var(--accent);background:var(--accent-soft);
+  border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
   padding:5px 10px;border-radius:var(--r-full)}
 .labhead h1{font-size:var(--fs-h2)}
-.labhead .grow{flex:1}
-.seg{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-full);padding:3px}
-.seg button{cursor:pointer;border:0;background:transparent;color:var(--ink-2);font-size:var(--fs-xs);font-weight:650;
-  padding:7px 12px;border-radius:var(--r-full);transition:background .15s,color .15s}
+.grow{flex:1}
+.seg{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-full);padding:3px;flex-wrap:wrap}
+.seg button{cursor:pointer;border:0;background:transparent;color:var(--ink-2);
+  font-size:var(--fs-xs);font-weight:650;padding:7px 12px;border-radius:var(--r-full);
+  transition:background .15s,color .15s}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh1)}
 .seg button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
-
+.stylecap{margin:0 0 var(--s5);padding:var(--s3) var(--s4);border-radius:var(--r-sm);
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);font-size:var(--fs-sm)}
+.stylecap b{color:var(--ink)}
 .sectlabel{display:flex;align-items:center;gap:var(--s3);margin:var(--s6) 0 var(--s3);
   color:var(--ink-3);font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .sectlabel::after{content:"";flex:1;height:1px;background:var(--line)}
 
-/* ══════════════ КАРТКА ══════════════ */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
-  box-shadow:var(--sh2);overflow:hidden}
+/* ── картка ── */
+.card{background:var(--card-bg);border:var(--card-border);border-radius:var(--card-radius);
+  box-shadow:var(--card-shadow);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  overflow:hidden}
 .card-pad{padding:var(--s6) var(--s5)}
 @media (min-width:560px){.card-pad{padding:var(--s6)}}
 
-/* ══════════════ ВХІД ══════════════ */
+/* ── вхід ── */
 .login{max-width:400px;margin:0 auto;text-align:center}
 .mark{width:44px;height:44px;margin:0 auto var(--s4);border-radius:var(--r-md);
-  display:grid;place-items:center;font-size:22px;
-  background:var(--surface-2);border:1px solid var(--line)}
+  display:grid;place-items:center;font-size:22px;background:var(--surface-2);border:1px solid var(--line)}
 .login h2{font-size:var(--fs-hero);margin-bottom:var(--s2)}
 .lede{color:var(--ink-2);font-size:var(--fs-sm);margin-bottom:var(--s5)}
-
 .field{width:100%;padding:15px var(--s4);border:1px solid var(--line-2);border-radius:var(--r-md);
-  background:var(--surface-2);color:var(--ink);
-  font-size:24px;font-weight:700;letter-spacing:.22em;text-align:center;text-transform:uppercase;
-  transition:border-color .15s,box-shadow .15s,background .15s}
+  background:var(--surface-2);color:var(--ink);font-size:24px;font-weight:700;letter-spacing:.22em;
+  text-align:center;text-transform:uppercase;transition:border-color .15s,box-shadow .15s,background .15s}
 .field::placeholder{color:var(--ink-3);font-weight:600;letter-spacing:.18em}
 .field:focus{outline:none;border-color:var(--brand);background:var(--surface);
   box-shadow:0 0 0 4px var(--brand-ring)}
 
-.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);
-  width:100%;min-height:48px;padding:0 var(--s5);margin-top:var(--s3);
-  cursor:pointer;border:1px solid transparent;border-radius:var(--r-full);
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);width:100%;
+  min-height:48px;padding:0 var(--s5);margin-top:var(--s3);cursor:pointer;
+  border:1px solid transparent;border-radius:var(--r-full);
   font-size:var(--fs-body);font-weight:650;letter-spacing:-.005em;
-  background:var(--accent);color:#fff;box-shadow:var(--sh1);
-  transition:background .15s,transform .08s,box-shadow .15s}
+  background:var(--accent);color:var(--accent-ink);box-shadow:var(--sh1);
+  transition:background .15s,transform .08s,box-shadow .15s,filter .15s}
 .btn:hover{background:var(--accent-2)}
 .btn:active{transform:translateY(1px)}
 .btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-.btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line-2);box-shadow:none}
-.btn.ghost:hover{background:var(--surface-2);border-color:var(--line-2)}
-.btn.quiet{background:transparent;color:var(--ink-2);border-color:transparent;box-shadow:none;
-  min-height:40px;font-weight:600;font-size:var(--fs-sm)}
-.btn.quiet:hover{color:var(--ink);background:var(--surface-2)}
+.btn.ghost:hover{background:var(--surface-2)}
 .btn-row{display:flex;gap:var(--s3)}
 .btn-row .btn{margin-top:0}
-
 .divider{display:flex;align-items:center;gap:var(--s3);margin:var(--s5) 0 var(--s4);
   color:var(--ink-3);font-size:var(--fs-xs);font-weight:650}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
-
 .sig{margin-top:var(--s5);color:var(--ink-3);font-size:var(--fs-xs);line-height:1.5;text-align:center}
 .sig b{color:var(--ink-2);font-weight:650}
 
-/* ══════════════ ШАПКА ГРИ ══════════════ */
+/* ── шапка гри, прогрес, підказка ── */
 .gtop{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s3)}
 .gtitle{font-size:var(--fs-h2);font-weight:650;letter-spacing:-.02em}
-.gtop .grow{flex:1}
 .stars{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-full);
   background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh1);
   font-size:var(--fs-sm);font-weight:700;font-variant-numeric:tabular-nums}
-.stars .n{color:var(--ink)}
 .stars .ic{color:var(--star)}
-
-/* прогрес: сегменти замість точок — видно, скільки раундів усього */
 .prog{display:flex;gap:5px;margin-bottom:var(--s5)}
-.prog i{flex:1;height:5px;border-radius:var(--r-full);background:var(--line);
-  transition:background .3s}
+.prog i{flex:1;height:5px;border-radius:var(--r-full);background:var(--line);transition:background .3s}
 .prog i.on{background:var(--accent)}
 .prog i.done{background:var(--ok)}
 .progmeta{display:flex;justify-content:space-between;color:var(--ink-3);
   font-size:var(--fs-xs);font-weight:650;margin-bottom:var(--s2)}
-
-/* підказка: акцентна смуга ліворуч замість «бульбашки з хвостиком» */
 .hint{display:flex;gap:var(--s3);padding:var(--s3) var(--s4);margin-bottom:var(--s5);
   background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
   border-radius:var(--r-sm);color:var(--ink-2);font-size:var(--fs-sm)}
 .hint b{color:var(--ink);font-weight:650}
 .hint.good{border-left-color:var(--ok);background:var(--ok-soft);border-color:var(--ok-line)}
 .hint.warn{border-left-color:var(--bad);background:var(--bad-soft);border-color:var(--bad-line)}
+.task{font-size:var(--fs-h2);font-weight:650;margin-bottom:var(--s5);letter-spacing:-.018em;text-wrap:balance}
 
-.task{font-size:var(--fs-h2);font-weight:650;margin-bottom:var(--s5);letter-spacing:-.018em;
-  text-wrap:balance}
-
-/* ══════════════ ПЛИТКИ ══════════════ */
+/* ── плитки ── */
 .tiles{display:grid;gap:var(--s3);grid-template-columns:1fr}
-@media (min-width:620px){.tiles.two{grid-template-columns:1fr 1fr}}
-.tile{display:flex;align-items:center;gap:var(--s3);width:100%;
-  min-height:52px;padding:var(--s3) var(--s4);cursor:pointer;text-align:left;
+.tile{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:52px;
+  padding:var(--s3) var(--s4);cursor:pointer;text-align:left;
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
-  color:var(--ink);font-size:var(--fs-sm);font-weight:550;line-height:1.4;
-  box-shadow:var(--sh1);
+  color:var(--ink);font-size:var(--fs-sm);font-weight:550;line-height:1.4;box-shadow:var(--sh1);
   transition:border-color .15s,box-shadow .15s,transform .12s,background .15s;
-  animation:rise .34s cubic-bezier(.2,.7,.3,1) both;
-  animation-delay:calc(var(--i,0) * 45ms)}
+  animation:rise .34s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(var(--i,0) * 45ms)}
 .tile .ic{flex:none;font-size:19px;line-height:1;width:22px;text-align:center}
 .tile:hover{border-color:var(--line-2);box-shadow:var(--sh2);transform:translateY(-1px)}
 .tile:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .tile.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--sh2)}
-.tile.ok{border-color:var(--ok-line);background:var(--ok-soft);color:var(--ink)}
+.tile.ok{border-color:var(--ok-line);background:var(--ok-soft)}
 .tile.ok .ic{color:var(--ok)}
 .tile.err{border-color:var(--bad-line);background:var(--bad-soft);animation:nudge .3s}
 .tile.gone{opacity:0;transform:scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
-.tile .tag{margin-left:auto;flex:none;font-size:var(--fs-xs);font-weight:700;
-  color:var(--ok);background:var(--surface);border:1px solid var(--ok-line);
-  padding:2px 8px;border-radius:var(--r-full)}
-
-/* цілі («папки») */
+.tile .tag{margin-left:auto;flex:none;font-size:var(--fs-xs);font-weight:700;color:var(--ok);
+  background:var(--surface);border:1px solid var(--ok-line);padding:2px 8px;border-radius:var(--r-full)}
 .targets{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:var(--s4)}
-.target{padding:var(--s4) var(--s3);cursor:pointer;text-align:center;
-  background:var(--surface-2);border:1.5px dashed var(--line-2);border-radius:var(--r-lg);
+.target{padding:var(--s4) var(--s3);cursor:pointer;text-align:center;background:var(--surface-2);
+  border:1.5px dashed var(--line-2);border-radius:var(--r-lg);
   transition:border-color .15s,background .15s,transform .12s}
 .target:hover{border-color:var(--accent);background:var(--surface)}
 .target:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
@@ -232,57 +205,207 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 .target.hit{animation:pop .3s;border-style:solid;border-color:var(--ok-line);background:var(--ok-soft)}
 .target.nope{animation:nudge .3s}
 
-/* ══════════════ ЧИСЛОВИЙ РАУНД ══════════════ */
+/* ── числовий раунд ── */
 .qbox{padding:var(--s5);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg)}
 .qnum{color:var(--ink-3);font-size:var(--fs-xs);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .qtext{margin:var(--s3) 0 var(--s5);font-size:clamp(16px,3vw,19px);line-height:1.45}
 .qtext code{font-family:var(--mono);font-size:.94em;background:var(--surface);
   border:1px solid var(--line);border-radius:7px;padding:2px 6px}
 .qrow{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
-.numin{width:150px;min-height:48px;padding:0 var(--s4);text-align:center;
-  font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;
-  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-md);color:var(--ink);
-  transition:border-color .15s,box-shadow .15s}
+.numin{width:150px;min-height:48px;padding:0 var(--s4);text-align:center;font-size:22px;font-weight:700;
+  font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line-2);
+  border-radius:var(--r-md);color:var(--ink);transition:border-color .15s,box-shadow .15s}
 .numin:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-ring)}
 .qrow .btn{width:auto;margin-top:0;flex:0 0 auto}
-.unit{color:var(--ink-2);font-size:var(--fs-sm);font-weight:650}
 .verdict{margin-top:var(--s4);min-height:22px;color:var(--ink-2);font-size:var(--fs-sm)}
 .verdict b.y{color:var(--ok)} .verdict b.n{color:var(--bad)}
 
-/* ══════════════ ФІНАЛ ══════════════ */
+/* ── фінал ── */
 .fin{text-align:center;padding:var(--s6) var(--s4)}
 .grade{font-size:clamp(56px,15vw,84px);font-weight:700;line-height:1;letter-spacing:-.04em;
-  font-variant-numeric:tabular-nums;color:var(--ink)}
+  font-variant-numeric:tabular-nums}
 .grade small{font-size:.34em;font-weight:650;color:var(--ink-3);letter-spacing:0}
 .finlabel{margin-top:var(--s2);color:var(--ink-2);font-size:var(--fs-sm);font-weight:650}
 .chips{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;margin:var(--s5) 0}
 .chip{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-full);
-  background:var(--surface-2);border:1px solid var(--line);
-  font-size:var(--fs-xs);font-weight:650;color:var(--ink-2);font-variant-numeric:tabular-nums}
+  background:var(--surface-2);border:1px solid var(--line);font-size:var(--fs-xs);font-weight:650;
+  color:var(--ink-2);font-variant-numeric:tabular-nums}
 .chip b{color:var(--ink)}
 .note{max-width:420px;margin:0 auto;color:var(--ink-3);font-size:var(--fs-xs);line-height:1.55}
 .fin .btn-row{max-width:340px;margin:var(--s5) auto 0}
 
-/* ══════════════ АНІМАЦІЇ ══════════════ */
 @keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 @keyframes pop{50%{transform:scale(1.04)}}
 @keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none !important;transition:none !important}
-}
+@keyframes drift{to{transform:translate3d(0,-4%,0) scale(1.09)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
 
-/* ══════════════ ПАНЕЛЬ «ЩО ЗМІНИЛОСЯ» ══════════════ */
 .notes{margin-top:var(--s6)}
-.notes summary{cursor:pointer;font-weight:650;color:var(--ink);padding:var(--s3) 0}
-.notes ul{margin:var(--s2) 0 0;padding-left:var(--s5);color:var(--ink-2);font-size:var(--fs-sm)}
-.notes li{margin-bottom:7px}
-.notes b{color:var(--ink)}
+.notes summary{cursor:pointer;font-weight:650;padding:var(--s3) 0}
 .cmp{display:grid;gap:var(--s3);grid-template-columns:1fr;margin-top:var(--s3)}
 @media (min-width:620px){.cmp{grid-template-columns:1fr 1fr}}
-.cmp div{padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);
-  font-size:var(--fs-sm);color:var(--ink-2)}
+.cmp div{padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--surface-2);font-size:var(--fs-sm);color:var(--ink-2)}
 .cmp .h{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   color:var(--ink-3);margin-bottom:6px}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ВАРІАНТ 2 · СКЛО І ГЛИБИНА
+   Розмиті кольорові плями + напівпрозорі картки.
+   ⚠️ backdrop-filter лишається ТІЛЬКИ на картках, не на кожній плитці —
+   інакше на слабких телефонах помітно гальмує.
+   ══════════════════════════════════════════════════════════════════════ */
+[data-style="glass"]{
+  --r-lg:24px; --r-md:16px;
+  --card-bg:color-mix(in srgb,var(--surface) 60%,transparent);
+  --card-border:1px solid color-mix(in srgb,#fff 55%,transparent);
+  --card-shadow:0 24px 60px -28px rgba(15,23,42,.35),
+                inset 0 1px 0 color-mix(in srgb,#fff 65%,transparent);
+  --blur:blur(20px) saturate(1.25);
+}
+[data-style="glass"] body::after{
+  background:
+    radial-gradient(38% 32% at 20% 14%,#7aa9ff 0%,transparent 62%),
+    radial-gradient(34% 28% at 84% 24%,#ffb37a 0%,transparent 60%),
+    radial-gradient(40% 34% at 60% 86%,#b48cff 0%,transparent 62%);
+  filter:blur(70px) saturate(1.2); opacity:.5;
+}
+[data-style="glass"] .tile,[data-style="glass"] .qbox,[data-style="glass"] .stylecap{
+  background:color-mix(in srgb,var(--surface) 66%,transparent);
+  border-color:color-mix(in srgb,#fff 45%,transparent);
+}
+[data-style="glass"] .target{
+  background:color-mix(in srgb,var(--surface) 40%,transparent);
+  border-color:color-mix(in srgb,#fff 40%,transparent);
+}
+[data-style="glass"] .stars,[data-style="glass"] .chip,[data-style="glass"] .btn.ghost{
+  background:color-mix(in srgb,var(--surface) 62%,transparent);
+  border-color:color-mix(in srgb,#fff 45%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+[data-style="glass"] .btn{box-shadow:0 8px 20px -8px color-mix(in srgb,var(--accent) 60%,transparent)}
+@media (prefers-color-scheme:dark){
+  [data-style="glass"]:not([data-theme="light"]){
+    --card-border:1px solid rgba(255,255,255,.10);
+    --card-shadow:0 24px 60px -28px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  [data-style="glass"]:not([data-theme="light"]) body::after{opacity:.30}
+  [data-style="glass"]:not([data-theme="light"]) .tile,
+  [data-style="glass"]:not([data-theme="light"]) .qbox,
+  [data-style="glass"]:not([data-theme="light"]) .stylecap,
+  [data-style="glass"]:not([data-theme="light"]) .target,
+  [data-style="glass"]:not([data-theme="light"]) .stars,
+  [data-style="glass"]:not([data-theme="light"]) .chip{border-color:rgba(255,255,255,.09)}
+}
+[data-style="glass"][data-theme="dark"]{
+  --card-border:1px solid rgba(255,255,255,.10);
+  --card-shadow:0 24px 60px -28px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.07);
+}
+[data-style="glass"][data-theme="dark"] body::after{opacity:.30}
+[data-style="glass"][data-theme="dark"] .tile,[data-style="glass"][data-theme="dark"] .qbox,
+[data-style="glass"][data-theme="dark"] .stylecap,[data-style="glass"][data-theme="dark"] .target,
+[data-style="glass"][data-theme="dark"] .stars,[data-style="glass"][data-theme="dark"] .chip{
+  border-color:rgba(255,255,255,.09)}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ВАРІАНТ 3 · ЖИВИЙ ГРАДІЄНТ
+   Темна база + повільно рухливі плями. Світлої теми НЕ має за задумом:
+   на світлому тлі неонові акценти не читаються.
+   ══════════════════════════════════════════════════════════════════════ */
+[data-style="grad"],[data-style="grad"][data-theme="light"],[data-style="grad"][data-theme="dark"]{
+  --bg:#07070c; --bg-2:#07070c;
+  --surface:#0f1017; --surface-2:#151723;
+  --line:#242634; --line-2:#393d52;
+  --ink:#f1f2f7; --ink-2:#a8adc2; --ink-3:#6d7391;
+  --brand:#7c5cff; --brand-ring:color-mix(in srgb,#7c5cff 30%,transparent);
+  --accent:#ff7a2f; --accent-2:#ff8f4d; --accent-soft:#2a1408; --accent-ink:#180a02;
+  --ok:#3ee6a0; --ok-soft:#08251b; --ok-line:#1d5f45;
+  --bad:#ff6b6b; --bad-soft:#2a1113; --bad-line:#6b2630;
+  --star:#ffc95c;
+  --r-lg:22px;
+  --card-bg:color-mix(in srgb,var(--surface) 88%,transparent);
+  --card-border:1px solid rgba(255,255,255,.07);
+  --card-shadow:0 30px 70px -34px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.05);
+  --sh1:0 1px 2px rgba(0,0,0,.5);
+  --sh2:0 6px 20px -8px rgba(0,0,0,.7);
+}
+[data-style="grad"] body::after{
+  background:
+    radial-gradient(30% 26% at 18% 20%,#ff7a2f 0%,transparent 60%),
+    radial-gradient(28% 24% at 82% 28%,#7c5cff 0%,transparent 60%),
+    radial-gradient(32% 28% at 55% 88%,#2f7de0 0%,transparent 60%);
+  filter:blur(85px); opacity:.42;
+  animation:drift 36s ease-in-out infinite alternate;
+}
+[data-style="grad"] .btn{
+  background:linear-gradient(135deg,#ff7a2f,#ff5f8a);
+  box-shadow:0 10px 30px -10px rgba(255,122,47,.6);
+  border-color:transparent}
+[data-style="grad"] .btn:hover{filter:brightness(1.08);background:linear-gradient(135deg,#ff7a2f,#ff5f8a)}
+[data-style="grad"] .btn.ghost{background:rgba(255,255,255,.05);color:var(--ink);
+  border-color:rgba(255,255,255,.12);box-shadow:none}
+[data-style="grad"] .grade{
+  background:linear-gradient(135deg,#ff9a4d,#ff5f8a 55%,#7c5cff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+[data-style="grad"] .prog i.on{box-shadow:0 0 12px color-mix(in srgb,var(--accent) 75%,transparent)}
+[data-style="grad"] .gtitle,[data-style="grad"] .login h2{letter-spacing:-.03em}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ВАРІАНТ 4 · ПАПЕРОВА КАРТКА
+   Товсті межі, зсунуті «жорсткі» тіні, живі кольори.
+   ══════════════════════════════════════════════════════════════════════ */
+[data-style="paper"]{
+  --bg:#fbf3e4; --bg-2:#fdf8ee;
+  --surface:#fffdf8; --surface-2:#f6efe0;
+  --line:#1b1a17; --line-2:#1b1a17;
+  --ink:#1b1a17; --ink-2:#4d4941; --ink-3:#857f72;
+  --brand:#1d5fd0; --accent:#f2801e; --accent-2:#e06f0f; --accent-ink:#1b1a17;
+  --ok:#12855c; --ok-soft:#d8f5e6; --ok-line:#12855c;
+  --bad:#c92f22; --bad-soft:#ffe3e0; --bad-line:#c92f22;
+  --star:#e0a010;
+  --r-lg:22px; --r-md:14px; --r-sm:12px;
+  --card-bg:var(--surface);
+  --card-border:2.5px solid var(--ink);
+  --card-shadow:6px 6px 0 var(--ink);
+  --sh1:none; --sh2:3px 3px 0 var(--ink);
+}
+[data-style="paper"] .tile,[data-style="paper"] .qbox,[data-style="paper"] .stars,
+[data-style="paper"] .chip,[data-style="paper"] .numin,[data-style="paper"] .field,
+[data-style="paper"] .stylecap,[data-style="paper"] .seg{
+  border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+[data-style="paper"] .tile:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+[data-style="paper"] .target{border:2.5px dashed var(--ink);box-shadow:3px 3px 0 var(--ink)}
+[data-style="paper"] .btn{border:2.5px solid var(--ink);border-radius:var(--r-md);
+  box-shadow:4px 4px 0 var(--ink);font-weight:750}
+[data-style="paper"] .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+[data-style="paper"] .prog i{height:9px;border:2px solid var(--ink);border-radius:6px}
+[data-style="paper"] .hint{border:2px solid var(--ink);border-left:7px solid var(--accent);
+  box-shadow:3px 3px 0 var(--ink)}
+[data-style="paper"] .hint.good{border-left-color:var(--ok)}
+[data-style="paper"] .hint.warn{border-left-color:var(--bad)}
+[data-style="paper"] .mark{border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+[data-style="paper"] .badge{border:2px solid var(--ink)}
+[data-style="paper"] .divider::before,[data-style="paper"] .divider::after{height:2px;background:var(--ink)}
+[data-style="paper"] .sectlabel::after{height:2px;background:var(--ink)}
+[data-style="paper"] h1,[data-style="paper"] h2,[data-style="paper"] .task,
+[data-style="paper"] .gtitle{font-weight:750;letter-spacing:-.01em}
+[data-style="paper"][data-theme="dark"]{
+  --bg:#141310; --bg-2:#1a1815; --surface:#221f1a; --surface-2:#2b2721;
+  --line:#f5ead6; --line-2:#f5ead6; --ink:#f5ead6; --ink-2:#c8bda9; --ink-3:#8f8677;
+  --accent:#ffa64d; --accent-2:#ffb870; --accent-ink:#141310;
+  --ok:#4fd6a0; --ok-soft:#12332a; --ok-line:#4fd6a0;
+  --bad:#ff8078; --bad-soft:#38191a; --bad-line:#ff8078;
+  --card-border:2.5px solid var(--ink); --card-shadow:6px 6px 0 var(--ink); --sh2:3px 3px 0 var(--ink);
+}
+@media (prefers-color-scheme:dark){
+  [data-style="paper"]:not([data-theme="light"]){
+    --bg:#141310; --bg-2:#1a1815; --surface:#221f1a; --surface-2:#2b2721;
+    --line:#f5ead6; --line-2:#f5ead6; --ink:#f5ead6; --ink-2:#c8bda9; --ink-3:#8f8677;
+    --accent:#ffa64d; --accent-2:#ffb870; --accent-ink:#141310;
+    --ok:#4fd6a0; --ok-soft:#12332a; --ok-line:#4fd6a0;
+    --bad:#ff8078; --bad-soft:#38191a; --bad-line:#ff8078;
+  }
+}
 </style>
 </head>
 <body>
@@ -290,16 +413,27 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 
   <div class="labhead">
     <span class="badge">прототип</span>
-    <h1>Спокійний мінімалізм</h1>
+    <h1 id="styleName">Спокійний мінімалізм</h1>
     <span class="grow"></span>
     <div class="seg" role="group" aria-label="Тема">
       <button data-theme-btn="light" aria-pressed="false">Світла</button>
-      <button data-theme-btn="auto"  aria-pressed="true">Авто</button>
-      <button data-theme-btn="dark"  aria-pressed="false">Темна</button>
+      <button data-theme-btn="auto" aria-pressed="true">Авто</button>
+      <button data-theme-btn="dark" aria-pressed="false">Темна</button>
     </div>
   </div>
 
-  <!-- ══════════ 1. ВХІД ══════════ -->
+  <div class="labhead">
+    <div class="seg" role="group" aria-label="Варіант дизайну">
+      <button data-style-btn="min" aria-pressed="true">1 · Мінімалізм</button>
+      <button data-style-btn="glass" aria-pressed="false">2 · Скло</button>
+      <button data-style-btn="grad" aria-pressed="false">3 · Градієнт</button>
+      <button data-style-btn="paper" aria-pressed="false">4 · Папір</button>
+    </div>
+  </div>
+
+  <p class="stylecap" id="cap"></p>
+
+  <!-- 1. ВХІД -->
   <div class="sectlabel">1 · Вхід за кодом</div>
   <div class="card card-pad login">
     <div class="mark" aria-hidden="true">🎮</div>
@@ -307,38 +441,34 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
     <p class="lede">Введи код, який дав вчитель — і відкриється твоя гра.</p>
     <input class="field" id="code" placeholder="КОД" maxlength="8" autocomplete="off" aria-label="Код">
     <button class="btn" id="enter">Увійти →</button>
-
     <div class="divider">ще немає коду?</div>
     <p class="lede" style="text-align:left;margin-bottom:var(--s4)">
       Тут можна побачити, як усе працює, <b>не витрачаючи жодної спроби</b>: три коротенькі
       раунди, оцінка за тією самою шкалою — і нічого не зберігається.</p>
     <button class="btn ghost">Спробувати демо →</button>
-
     <div class="sig">
       © 2025–2026 <b>Процюк О. К.</b> · вчитель інформатики<br>
       Комунальний заклад «Харківський ліцей № 47 Харківської міської ради»
     </div>
   </div>
 
-  <!-- ══════════ 2. РАУНД «ПОЗНАЧ ПРАВИЛЬНІ» ══════════ -->
+  <!-- 2. ПОЗНАЧ ПРАВИЛЬНІ -->
   <div class="sectlabel">2 · Раунд «познач правильні»</div>
   <div class="card card-pad">
     <div class="gtop">
       <span class="gtitle">Алгоритми та програми</span>
       <span class="grow"></span>
-      <span class="stars"><span class="ic">★</span><span class="n" id="st1">4</span></span>
+      <span class="stars"><span class="ic">★</span><span id="st1">4</span></span>
     </div>
     <div class="progmeta"><span>Раунд 2 з 5</span><span>ГР 2</span></div>
     <div class="prog"><i class="done"></i><i class="on"></i><i></i><i></i><i></i></div>
-
     <div class="hint" id="h1"><span>💡</span><span>Правильних — <b>чотири</b>. Три інші звучать
       переконливо, але неправильні.</span></div>
-
     <p class="task">Познач ЧОТИРИ правильні твердження про логіку в пошуку</p>
     <div class="tiles" id="pick"></div>
   </div>
 
-  <!-- ══════════ 3. РАУНД «РОЗКЛАДИ» ══════════ -->
+  <!-- 3. РОЗКЛАДИ -->
   <div class="sectlabel">3 · Раунд «розклади по групах»</div>
   <div class="card card-pad">
     <div class="hint"><span>💡</span><span>Спершу торкнись <b>картки</b>, потім групи.
@@ -348,7 +478,7 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
     <div class="targets" id="sorttargets"></div>
   </div>
 
-  <!-- ══════════ 4. ЧИСЛОВИЙ РАУНД ══════════ -->
+  <!-- 4. ЧИСЛОВИЙ -->
   <div class="sectlabel">4 · Раунд із числовою відповіддю</div>
   <div class="card card-pad">
     <div class="qbox">
@@ -356,14 +486,14 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
       <p class="qtext">Проєкт рахує так: <code>if x &lt; -3 or x &gt; 5: y = 2*x - 12</code>,
         а <code>else: y = 7 - 8*x</code>.<br>Уводимо <b>x = −3</b>. Яке <b>y</b> покаже проєкт?</p>
       <div class="qrow">
-        <input class="numin" id="num" placeholder="?" inputmode="text" autocomplete="off" aria-label="Відповідь">
+        <input class="numin" id="num" placeholder="?" autocomplete="off" aria-label="Відповідь">
         <button class="btn" id="chk">Перевірити</button>
       </div>
       <div class="verdict" id="vd">Уведи число й натисни «Перевірити» (або Enter).</div>
     </div>
   </div>
 
-  <!-- ══════════ 5. ФІНАЛ ══════════ -->
+  <!-- 5. ФІНАЛ -->
   <div class="sectlabel">5 · Фінал</div>
   <div class="card">
     <div class="fin">
@@ -383,36 +513,20 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
     </div>
   </div>
 
-  <!-- ══════════ нотатки ══════════ -->
-  <details class="notes" open>
-    <summary>Що саме змінилося проти нинішнього сайту</summary>
-    <ul>
-      <li><b>Типографіка</b> — вариативний системний шрифт, плавні розміри <code>clamp()</code>,
-        щільніші заголовки. Без зовнішніх запитів: нічого не «стрибає» на слабкому інтернеті.</li>
-      <li><b>Плитки — мінімум 52 px</b> висоти замість ~40. На телефоні в них нарешті легко влучити.</li>
-      <li><b>Прогрес — сегменти замість точок.</b> Одразу видно, скільки раундів усього
-        і скільком уже закрито.</li>
-      <li><b>Підказка — смуга акценту ліворуч</b> замість «бульбашки з хвостиком».
-        Менше декору, більше читабельності; є три стани: звичайний, правильно, помилка.</li>
-      <li><b>Кнопка — без «3D-підкладки».</b> Тонка тінь і зсув на 1 px при натисканні.
-        Оранжевий тепер тільки на <b>головній</b> дії та прогресі.</li>
-      <li><b>Тіні у три рівні</b> замість однієї важкої; межі — волосяні 1 px.</li>
-      <li><b>Три рівні тексту</b> (головний / другорядний / підписи) замість двох —
-        видно ієрархію без збільшення кольорів.</li>
-      <li><b>Числа — табличні цифри.</b> Бал і зірочки не «стрибають» при зміні.</li>
-      <li><b>Плитки з’являються каскадом</b> (45 мс одна за одною) — рух є, але не заважає.</li>
-      <li><b>Фокус видно всюди</b> (<code>:focus-visible</code>) — сайтом можна користуватися
-        з клавіатури.</li>
-      <li><b>Темна тема — справжня темна</b> (#0a0c11), а не синювата. Ручний перемикач угорі.</li>
-      <li><b>Уся анімація вимикається</b> при <code>prefers-reduced-motion</code>.</li>
-    </ul>
+  <details class="notes">
+    <summary>Що однакове в усіх чотирьох і чого немає ні в одному</summary>
     <div class="cmp">
-      <div><div class="h">лишилося як було</div>
-        синьо-оранжева гама · темна тема · механіки раундів · зірочки за правильні дії ·
-        підпис автора у футері</div>
-      <div><div class="h">свідомо НЕ брав</div>
-        скло/<code>backdrop-filter</code> (гальмує на слабких телефонах) · рухомий градієнтний фон ·
-        зовнішні шрифти · неон (погано для довгого читання завдань)</div>
+      <div><div class="h">однакове в усіх варіантах</div>
+        плитки від 52 px (щоб влучати пальцем) · прогрес сегментами, а не точками ·
+        підказка зі станами «правильно / помилка» · три рівні тексту ·
+        табличні цифри для балу · <code>:focus-visible</code> ·
+        системний шрифт без зовнішніх запитів · уся анімація гасне при
+        <code>prefers-reduced-motion</code></div>
+      <div><div class="h">чого немає ні в одному</div>
+        зовнішніх шрифтів (текст не «стрибає» на слабкому інтернеті) ·
+        звуків · автоплей-відео · <code>backdrop-filter</code> на кожній плитці
+        (у «Склі» він лише на картках — інакше телефон гальмує) ·
+        сторонніх бібліотек: усе на чистому CSS</div>
     </div>
   </details>
 </div>
@@ -421,9 +535,31 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+
+  /* ── варіанти ── */
+  const STYLES = {
+    min:{ name:"Спокійний мінімалізм",
+      cap:"<b>Як сучасні вебзастосунки.</b> Щільна типографіка, волосяні межі, тіні у три рівні, оранжевий — тільки на головній дії. ⭐ Найшвидше працює й не відвертає від завдання. ⚠️ Для 5–6 класу може здатися стриманим." },
+    glass:{ name:"Скло і глибина",
+      cap:"<b>Напівпрозорі картки на розмитих плямах.</b> Виглядає дорого, добре в темній темі. ⚠️ <code>backdrop-filter</code> лишив тільки на картках — на кожній плитці слабкі телефони гальмують. ⚠️ Текст завдань на кольоровому тлі читається гірше." },
+    grad:{ name:"Живий градієнт",
+      cap:"<b>Темна база + повільно рухливі плями, неонові акценти.</b> Дітям зазвичай дуже до вподоби. ⚠️ Світлої теми не має за задумом. ⚠️ У грі багато тексту завдань — на темному його читати важче за довгий урок." },
+    paper:{ name:"Паперова картка",
+      cap:"<b>Товсті межі, зсунуті жорсткі тіні, живі кольори.</b> Грає як настільна гра, дуже добре для 5–6 класу. ⚠️ Для 8 класу може виглядати дитячо. ⭐ Найкраща помітність меж і кнопок на дешевих матових екранах." }
+  };
+  const setStyle = v => {
+    root.setAttribute('data-style', v);
+    $('styleName').textContent = STYLES[v].name;
+    $('cap').innerHTML = STYLES[v].cap;
+    document.querySelectorAll('[data-style-btn]').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.styleBtn === v)));
+    try{ localStorage.setItem('prevStyle', v); }catch(e){}
+  };
+  document.querySelectorAll('[data-style-btn]').forEach(b =>
+    b.onclick = () => setStyle(b.dataset.styleBtn));
 
   /* ── тема ── */
-  const root = document.documentElement;
   const setTheme = v => {
     if(v === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', v);
     document.querySelectorAll('[data-theme-btn]').forEach(b =>
@@ -432,13 +568,17 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   document.querySelectorAll('[data-theme-btn]').forEach(b =>
     b.onclick = () => setTheme(b.dataset.themeBtn));
 
-  /* ── 1. вхід ── */
+  let saved = 'min';
+  try{ saved = localStorage.getItem('prevStyle') || 'min'; }catch(e){}
+  setStyle(STYLES[saved] ? saved : 'min');
+
+  /* ── вхід ── */
   $('enter').onclick = () => {
     const v = $('code').value.trim();
     $('code').style.borderColor = v.length >= 3 ? 'var(--ok)' : 'var(--bad)';
   };
 
-  /* ── 2. «познач правильні» ── */
+  /* ── «познач правильні» ── */
   const PICK = [
     {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів більше", ic:"✅", ok:true},
     {n:"РІЗНІ фільтри з’єднані через and — результатів менше", ic:"✅", ok:true},
@@ -453,33 +593,31 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   ];
   let stars = 4, found = 0;
   const need = PICK.filter(x => x.ok).length;
-  const pool = $('pick');
   PICK.forEach((it, i) => {
     const b = document.createElement('button');
     b.className = 'tile'; b.style.setProperty('--i', i);
-    b.innerHTML = `<span class="ic">${it.ic}</span><span>${it.n}</span>`;
+    b.innerHTML = '<span class="ic">' + it.ic + '</span><span>' + it.n + '</span>';
     b.onclick = () => {
       if(b.dataset.done) return;
+      const h = $('h1');
       if(it.ok){
         b.classList.add('ok'); b.dataset.done = 1;
         b.insertAdjacentHTML('beforeend', '<span class="tag">+1 ★</span>');
         stars++; $('st1').textContent = stars; found++;
-        const h = $('h1');
         h.className = 'hint good';
         h.innerHTML = found === need
           ? '<span>🎉</span><span>Раунд пройдено — усі чотири знайдено.</span>'
-          : `<span>✅</span><span>Так, правильно. Лишилось: <b>${need - found}</b>.</span>`;
+          : '<span>✅</span><span>Так, правильно. Лишилось: <b>' + (need - found) + '</b>.</span>';
       } else {
         b.classList.add('err'); setTimeout(() => b.classList.remove('err'), 340);
-        const h = $('h1');
         h.className = 'hint warn';
-        h.innerHTML = `<span>⚠️</span><span>Ні — ${it.s}.</span>`;
+        h.innerHTML = '<span>⚠️</span><span>Ні — ' + it.s + '.</span>';
       }
     };
-    pool.appendChild(b);
+    $('pick').appendChild(b);
   });
 
-  /* ── 3. «розклади по групах» ── */
+  /* ── «розклади по групах» ── */
   const ITEMS = [
     {n:"Бал неприпустимий: менший за 1 <b>або</b> більший за 12", ic:"🚫", f:"or"},
     {n:"Температура небезпечна: нижче −20 <b>або</b> вище +35", ic:"🌡", f:"or"},
@@ -487,40 +625,40 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
     {n:"Трикутник існує: кожна сторона менша за суму двох інших", ic:"🔺", f:"and"}
   ];
   const GROUPS = [{k:"or", ic:"🔼", name:"or — диз’юнкція"}, {k:"and", ic:"🔽", name:"and — кон’юнкція"}];
-  let sel = null, left = ITEMS.length;
-  const sp = $('sortpool'), tg = $('sorttargets');
+  let sel = null;
+  const sp = $('sortpool');
   ITEMS.forEach((it, i) => {
     const b = document.createElement('button');
     b.className = 'tile'; b.style.setProperty('--i', i);
-    b.innerHTML = `<span class="ic">${it.ic}</span><span>${it.n}</span>`;
+    b.innerHTML = '<span class="ic">' + it.ic + '</span><span>' + it.n + '</span>';
     b.onclick = () => {
       if(b.classList.contains('gone')) return;
       [...sp.children].forEach(x => x.classList.remove('sel'));
-      b.classList.add('sel'); sel = {it, el:b};
+      b.classList.add('sel'); sel = {it:it, el:b};
     };
     sp.appendChild(b);
   });
   GROUPS.forEach(g => {
     const d = document.createElement('div');
     d.className = 'target'; d.tabIndex = 0; d.setAttribute('role', 'button');
-    d.innerHTML = `<div class="tic">${g.ic}</div><div class="tname">${g.name}</div><div class="tcnt">0</div>`;
+    d.innerHTML = '<div class="tic">' + g.ic + '</div><div class="tname">' + g.name +
+                  '</div><div class="tcnt">0</div>';
     let cnt = 0;
     const act = () => {
       if(!sel){ d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320); return; }
       if(sel.it.f === g.k){
         sel.el.classList.add('gone'); cnt++; d.querySelector('.tcnt').textContent = cnt;
-        d.classList.add('hit'); setTimeout(() => d.classList.remove('hit'), 320);
-        sel = null; left--;
+        d.classList.add('hit'); setTimeout(() => d.classList.remove('hit'), 320); sel = null;
       } else {
         d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320);
       }
     };
     d.onclick = act;
     d.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); act(); } };
-    tg.appendChild(d);
+    $('sorttargets').appendChild(d);
   });
 
-  /* ── 4. числовий раунд ── */
+  /* ── числовий раунд ── */
   const ANSWER = 31;
   const check = () => {
     const raw = ($('num').value || '').replace(/[\s ]/g, '').replace(',', '.').replace('−', '-');
@@ -539,8 +677,8 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   $('chk').onclick = check;
   $('num').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); check(); } };
 
-  /* ── 5. фінал: плавний підрахунок балу ── */
-  const countUp = (to) => {
+  /* ── фінал ── */
+  const countUp = to => {
     const el = $('gr');
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = to; return; }
     let cur = 0;
