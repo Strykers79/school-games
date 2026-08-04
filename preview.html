@@ -309,10 +309,10 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
 
 /* ══════════════════════════════════════════════════════════════════════
    ВАРІАНТ 3 · ЖИВИЙ ГРАДІЄНТ
-   Темна база + повільно рухливі плями. Світлої теми НЕ має за задумом:
-   на світлому тлі неонові акценти не читаються.
+   Темна база за замовчуванням + СВІТЛА тема тією самою гамою (нижче).
+   «Авто» слухає системну настройку: у кого стоїть темна — бачить темну.
    ══════════════════════════════════════════════════════════════════════ */
-[data-style="grad"],[data-style="grad"][data-theme="light"],[data-style="grad"][data-theme="dark"]{
+[data-style="grad"],[data-style="grad"][data-theme="dark"]{
   --bg:#07070c; --bg-2:#07070c;
   --surface:#0f1017; --surface-2:#151723;
   --line:#242634; --line-2:#393d52;
@@ -349,6 +349,71 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
   -webkit-background-clip:text;background-clip:text;color:transparent}
 [data-style="grad"] .prog i.on{box-shadow:0 0 12px color-mix(in srgb,var(--accent) 75%,transparent)}
 [data-style="grad"] .gtitle,[data-style="grad"] .login h2{letter-spacing:-.03em}
+
+/* ── ГРАДІЄНТ · СВІТЛА ТЕМА ─────────────────────────────────────────────
+   Та сама гама (оранж → рожевий → фіалковий), але:
+   ⚠️ світіння прибрано — на білому воно читається як брудна пляма;
+   ⚠️ кольори глибші, бо неон на білому не має контрасту;
+   плями лишилися, тільки бліді.
+   Спрацьовує і на «Світла», і на «Авто», якщо в системі світла тема.
+   ──────────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme:light){
+  [data-style="grad"]:not([data-theme="dark"]){
+    --bg:#faf9ff; --bg-2:#ffffff;
+    --surface:#ffffff; --surface-2:#f7f6fd;
+    --line:#e8e6f4; --line-2:#d3d0e6;
+    --ink:#17162b; --ink-2:#4c4a68; --ink-3:#8a87a4;
+    --brand:#6244e8; --brand-ring:color-mix(in srgb,#6244e8 20%,transparent);
+    --accent:#e2560c; --accent-2:#c8480a; --accent-soft:#fff2ea; --accent-ink:#ffffff;
+    --ok:#0f9d68; --ok-soft:#eefbf4; --ok-line:#a7e3c6;
+    --bad:#d92d20; --bad-soft:#fef4f3; --bad-line:#f3b5b0;
+    --star:#dd9c06;
+    --card-bg:color-mix(in srgb,#fff 92%,transparent);
+    --card-border:1px solid var(--line);
+    --card-shadow:0 20px 48px -26px rgba(72,50,160,.22), inset 0 1px 0 #fff;
+    --sh1:0 1px 2px rgba(72,50,160,.06);
+    --sh2:0 6px 18px -8px rgba(72,50,160,.16);
+  }
+  [data-style="grad"]:not([data-theme="dark"]) body::after{opacity:.16;filter:blur(95px)}
+  [data-style="grad"]:not([data-theme="dark"]) .btn{
+    background:linear-gradient(135deg,#f0620c,#e0356f);
+    box-shadow:0 10px 24px -12px rgba(224,53,111,.5)}
+  [data-style="grad"]:not([data-theme="dark"]) .btn:hover{
+    background:linear-gradient(135deg,#f0620c,#e0356f)}
+  [data-style="grad"]:not([data-theme="dark"]) .btn.ghost{
+    background:var(--surface);color:var(--ink);border-color:var(--line-2)}
+  [data-style="grad"]:not([data-theme="dark"]) .grade{
+    background:linear-gradient(135deg,#e2560c,#d62e6b 55%,#6244e8);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  [data-style="grad"]:not([data-theme="dark"]) .prog i.on{box-shadow:none}
+}
+[data-style="grad"][data-theme="light"]{
+  --bg:#faf9ff; --bg-2:#ffffff;
+  --surface:#ffffff; --surface-2:#f7f6fd;
+  --line:#e8e6f4; --line-2:#d3d0e6;
+  --ink:#17162b; --ink-2:#4c4a68; --ink-3:#8a87a4;
+  --brand:#6244e8; --brand-ring:color-mix(in srgb,#6244e8 20%,transparent);
+  --accent:#e2560c; --accent-2:#c8480a; --accent-soft:#fff2ea; --accent-ink:#ffffff;
+  --ok:#0f9d68; --ok-soft:#eefbf4; --ok-line:#a7e3c6;
+  --bad:#d92d20; --bad-soft:#fef4f3; --bad-line:#f3b5b0;
+  --star:#dd9c06;
+  --card-bg:color-mix(in srgb,#fff 92%,transparent);
+  --card-border:1px solid var(--line);
+  --card-shadow:0 20px 48px -26px rgba(72,50,160,.22), inset 0 1px 0 #fff;
+  --sh1:0 1px 2px rgba(72,50,160,.06);
+  --sh2:0 6px 18px -8px rgba(72,50,160,.16);
+}
+[data-style="grad"][data-theme="light"] body::after{opacity:.16;filter:blur(95px)}
+[data-style="grad"][data-theme="light"] .btn{
+  background:linear-gradient(135deg,#f0620c,#e0356f);
+  box-shadow:0 10px 24px -12px rgba(224,53,111,.5)}
+[data-style="grad"][data-theme="light"] .btn:hover{background:linear-gradient(135deg,#f0620c,#e0356f)}
+[data-style="grad"][data-theme="light"] .btn.ghost{
+  background:var(--surface);color:var(--ink);border-color:var(--line-2)}
+[data-style="grad"][data-theme="light"] .grade{
+  background:linear-gradient(135deg,#e2560c,#d62e6b 55%,#6244e8);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+[data-style="grad"][data-theme="light"] .prog i.on{box-shadow:none}
 
 /* ══════════════════════════════════════════════════════════════════════
    ВАРІАНТ 4 · ПАПЕРОВА КАРТКА
@@ -544,7 +609,7 @@ button,input{font-family:inherit;font-size:inherit;color:inherit}
     glass:{ name:"Скло і глибина",
       cap:"<b>Напівпрозорі картки на розмитих плямах.</b> Виглядає дорого, добре в темній темі. ⚠️ <code>backdrop-filter</code> лишив тільки на картках — на кожній плитці слабкі телефони гальмують. ⚠️ Текст завдань на кольоровому тлі читається гірше." },
     grad:{ name:"Живий градієнт",
-      cap:"<b>Темна база + повільно рухливі плями, неонові акценти.</b> Дітям зазвичай дуже до вподоби. ⚠️ Світлої теми не має за задумом. ⚠️ У грі багато тексту завдань — на темному його читати важче за довгий урок." },
+      cap:"<b>Та сама гама у ДВОХ темах.</b> Темна: рухливі плями, світіння, неон. Світла: ті самі кольори, але глибші, світіння прибрано — на білому воно читається як брудна пляма. ⭐ Перемкніть <b>Світла / Темна</b> вгорі й порівняйте. «Авто» слухає системну настройку пристрою." },
     paper:{ name:"Паперова картка",
       cap:"<b>Товсті межі, зсунуті жорсткі тіні, живі кольори.</b> Грає як настільна гра, дуже добре для 5–6 класу. ⚠️ Для 8 класу може виглядати дитячо. ⭐ Найкраща помітність меж і кнопок на дешевих матових екранах." }
   };
