@@ -5,151 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Наведи лад — гра для 5 класу</title>
 <meta name="description" content="Інтерактивний тренажер до теми «Операційна система, файли та папки»: сортування файлів по папках, правильні імена файлів, операції та Кошик. Для 5 класу.">
-<style>
-  :root {
-    --bg1:#dfe9f5; --bg2:#eef4fb;
-    --surface:#ffffff; --surface-2:#eaf2f8; --border:#cfdcea; --border-2:#dce7f2;
-    --navy:#1b3a5c; --navy-soft:#3a5a7d;
-    --ink:#16232f; --dim:#5b7a99; --faint:#8aa0b5;
-    --accent:#f2994a; --accent-strong:#e07f28; --accent-ink:#3a2202;
-    --good:#2fb98a; --good-ink:#063d2b; --bad:#ea6b6b;
-    --star:#ffc043;
-    --shadow:rgba(27,58,92,.16);
-    --r:18px;
-    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg1:#0e1826; --bg2:#132133; --surface:#182a3e; --surface-2:#1f334a;
-      --border:#2b4059; --border-2:#24384f; --navy:#dbe7f3; --navy-soft:#9fb6cc;
-      --ink:#e7eef5; --dim:#9db1c6; --faint:#6f869c;
-      --accent:#ffab5e; --accent-strong:#ffbe7f; --accent-ink:#241300;
-      --good:#3fd6a0; --good-ink:#04241a; --bad:#ff8a8a; --star:#ffcf5c;
-      --shadow:rgba(0,0,0,.5);
-    }
-  }
-  :root[data-theme="light"]{
-    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--surface-2:#eaf2f8;--border:#cfdcea;--border-2:#dce7f2;
-    --navy:#1b3a5c;--navy-soft:#3a5a7d;--ink:#16232f;--dim:#5b7a99;--faint:#8aa0b5;
-    --accent:#f2994a;--accent-strong:#e07f28;--accent-ink:#3a2202;--good:#2fb98a;--good-ink:#063d2b;
-    --bad:#ea6b6b;--star:#ffc043;--shadow:rgba(27,58,92,.16);
-  }
-  :root[data-theme="dark"]{
-    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--surface-2:#1f334a;--border:#2b4059;--border-2:#24384f;
-    --navy:#dbe7f3;--navy-soft:#9fb6cc;--ink:#e7eef5;--dim:#9db1c6;--faint:#6f869c;
-    --accent:#ffab5e;--accent-strong:#ffbe7f;--accent-ink:#241300;--good:#3fd6a0;--good-ink:#04241a;
-    --bad:#ff8a8a;--star:#ffcf5c;--shadow:rgba(0,0,0,.5);
-  }
-
-  *{box-sizing:border-box}
-  body{
-    margin:0; min-height:100vh; font-family:var(--sans); color:var(--ink);
-    background:radial-gradient(1100px 700px at 50% -15%, var(--bg2), var(--bg1));
-    display:flex; align-items:flex-start; justify-content:center; padding:16px;
-    -webkit-font-smoothing:antialiased;
-  }
-  .app{width:100%; max-width:860px}
-
-  /* ── Верхня панель ── */
-  .top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap}
-  .logo{font-weight:800; font-size:clamp(20px,4.5vw,28px); color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
-  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
-  .spacer{flex:1}
-  .stars{font-weight:800; color:var(--navy); background:var(--surface); border:1px solid var(--border);
-    padding:8px 14px; border-radius:999px; font-size:16px; display:flex; align-items:center; gap:6px; box-shadow:0 2px 0 var(--border-2)}
-  .stars b{color:var(--accent-strong)}
-  .dots{display:flex; gap:6px}
-  .dots i{width:9px;height:9px;border-radius:50%; background:var(--border); display:block; transition:.2s}
-  .dots i.on{background:var(--accent)}
-  .dots i.done{background:var(--good)}
-
-  /* ── Картка гри ── */
-  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
-    box-shadow:0 20px 45px -30px var(--shadow), 0 2px 0 var(--border-2); overflow:hidden}
-  .head{background:linear-gradient(180deg, var(--surface-2), transparent); padding:16px 18px; border-bottom:1px solid var(--border-2);
-    display:flex; gap:14px; align-items:center}
-  .bit{flex:none; width:54px;height:54px;border-radius:16px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:30px; box-shadow:0 6px 14px -6px var(--shadow)}
-  /* Біт як svg: власного тла не треба, знак сам собі фон */
-  .bit-img{background:none; box-shadow:none; width:56px; height:56px; border-radius:0}
-  .bubble{position:relative; background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:10px 14px; font-size:clamp(15px,2.6vw,17px); color:var(--ink); line-height:1.35}
-  .bubble b{color:var(--accent-strong)}
-  .bubble::before{content:""; position:absolute; left:-8px; top:18px; width:14px;height:14px; background:var(--surface-2); border-left:1px solid var(--border-2); border-bottom:1px solid var(--border-2); transform:rotate(45deg)}
-  .stage{padding:20px 18px 22px}
-  .task{font-weight:800; color:var(--navy); font-size:clamp(16px,3vw,19px); margin:0 0 14px; text-wrap:balance}
-
-  /* ── Плитки файлів/папок ── */
-  .pool{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; min-height:64px}
-  .tile{appearance:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
-    background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:10px 14px;
-    display:flex; align-items:center; gap:9px; transition:transform .15s, border-color .15s, background .15s, box-shadow .15s}
-  .tile .ic{font-size:22px; line-height:1}
-  .tile:hover{border-color:var(--accent)}
-  .tile:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-  .tile.sel{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,var(--surface)); transform:translateY(-3px) scale(1.04); box-shadow:0 8px 18px -8px var(--shadow)}
-  .tile.gone{opacity:0; transform:scale(.4); pointer-events:none}
-  .tile.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
-  .tile.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
-
-  .targets{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
-  .folder{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2);
-    padding:14px 12px 12px; width:150px; text-align:center; transition:.15s}
-  .folder:hover{border-color:var(--accent)}
-  .folder:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-  .folder.armed{border-style:solid; border-color:var(--accent); background:color-mix(in srgb,var(--accent) 8%,var(--surface-2))}
-  .folder.hit{animation:pop .3s}
-  .folder.nope{animation:shake .3s}
-  .folder .fic{font-size:40px; line-height:1}
-  .folder .fname{font-weight:800; color:var(--navy); margin-top:4px}
-  .folder .cnt{font-size:13px; color:var(--faint); margin-top:2px}
-
-  /* ── Раунд «операції» ── */
-  .ops{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
-  .op{cursor:pointer; font-family:inherit; font-weight:800; font-size:15px; color:var(--navy);
-    background:var(--surface); border:2px solid var(--border); border-radius:999px; padding:11px 18px; transition:.15s}
-  .op:hover{border-color:var(--accent)}
-  .op:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-  .op.ok{border-color:var(--good); background:color-mix(in srgb,var(--good) 16%,var(--surface)); color:var(--good-ink)}
-  .op.err{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,var(--surface)); animation:shake .3s}
-  .prompt{background:var(--surface-2); border:1px solid var(--border-2); border-radius:14px; padding:16px; text-align:center;
-    font-size:clamp(16px,3vw,20px); font-weight:700; color:var(--ink); margin-bottom:16px}
-
-  /* ── Кошик ── */
-  .bin{cursor:pointer; border:2px dashed var(--border); border-radius:16px; background:var(--surface-2); padding:14px; width:170px; text-align:center; margin:0 auto; transition:.15s}
-  .bin:hover{border-color:var(--accent)}
-  .bin:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-  .bin.armed{border-style:solid;border-color:var(--accent)}
-  .bin .fic{font-size:44px}
-  .bin .cnt{font-size:13px;color:var(--faint);margin-top:2px}
-
-  /* ── Кнопки ── */
-  .actions{display:flex; justify-content:center; margin-top:20px}
-  .btn{appearance:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:16px;
-    padding:13px 26px; border-radius:999px; border:0; background:var(--accent); color:var(--accent-ink);
-    box-shadow:0 5px 0 var(--accent-strong); transition:transform .1s, box-shadow .1s}
-  .btn:hover{transform:translateY(-1px)}
-  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--accent-strong)}
-  .btn:focus-visible{outline:3px solid var(--navy); outline-offset:3px}
-  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:0 5px 0 var(--accent-strong)}
-  .btn.ghost{background:var(--surface); color:var(--navy); border:2px solid var(--border); box-shadow:0 4px 0 var(--border-2)}
-
-  /* ── Фінал ── */
-  .win{text-align:center; padding:30px 18px 34px}
-  .win .big{font-size:64px; line-height:1}
-  .win h2{color:var(--navy); font-size:clamp(22px,5vw,30px); margin:10px 0 4px}
-  .win p{color:var(--dim); font-size:17px; margin:0 0 8px}
-  .win .score{font-size:26px; font-weight:800; color:var(--accent-strong); margin:8px 0 18px}
-
-  .flash{position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; font-size:90px; opacity:0}
-  .flash.go{animation:flash .7s}
-
-  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  @keyframes flash{0%{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.3)}}
-  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
-
-  footer{text-align:center; color:var(--faint); font-size:13px; margin-top:14px}
-  footer .sig{display:block; margin-top:5px; font-size:12px}
-</style>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/game.css">
 <script src="../supabase-config.js"></script>
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -238,7 +95,7 @@
       const b=document.createElement("button"); b.className="tile"; b.dataset.i=i;
       b.innerHTML=`<span class="ic">${icon(f.n)}</span>${f.n}`;
       b.onclick=()=>{ if(b.classList.contains("gone"))return;
-        [...pool.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); sel=f; sel.el=b;
+        [...pool.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); targets.classList.add("armed"); sel=f; sel.el=b;
         bit(`Файл <b>${f.n}</b> обрано. Тепер торкнись папки, куди він підходить.`); };
       pool.appendChild(b);
     });
@@ -251,7 +108,7 @@
         if(sel.f===name){
           sel.el.classList.add("gone"); counts[name]++; d.querySelector(".cnt").textContent=counts[name]+" файл(ів)";
           d.classList.add("hit"); setTimeout(()=>d.classList.remove("hit"),300);
-          addStar(); left--; sel=null;
+          addStar(); left--; sel=null; targets.classList.remove("armed");
           if(left===0){ bit("Ідеально! Робочий стіл чистий ✨"); done(); }
           else bit("Правильно! Клас 👍 Наступний файл?");
         } else {
@@ -279,12 +136,14 @@
     const pool=$("pool");
     items.forEach(it=>{
       const b=document.createElement("button"); b.className="tile"; b.style.minWidth="150px";
-      b.innerHTML=`<span class="ic">📄</span>${it.n}`;
+      b.innerHTML=`<span class="pbox" aria-hidden="true">\u2713</span>${it.n}`;
       b.onclick=()=>{
         if(b.dataset.done)return;
         if(it.ok){ b.classList.add("ok"); b.dataset.done=1; addStar(); foundGood++;
           bit("Так, це коректне ім'я ✅"); if(foundGood===totalGood){ bit("Ти знайшов усі правильні імена! 🎯"); done(); } }
-        else { b.classList.add("err"); setTimeout(()=>b.classList.remove("err"),400);
+        else { const bx=b.querySelector(".pbox"); b.classList.add("err");
+          if(bx) bx.textContent="\u2715";
+          setTimeout(()=>{ b.classList.remove("err"); if(bx) bx.textContent="\u2713"; },900);
           mistakes++; bit(`Ні! У цьому імені є заборонений символ «<b>${it.s}</b>» — так файл назвати не можна.`); }
       };
       pool.appendChild(b);
@@ -330,7 +189,7 @@
     stage.innerHTML=`<p class="task" id="t4">Крок 1: видали <b>непотрібний</b> файл — торкнись його, потім Кошика</p>
       <div class="pool" id="pool"></div>
       <div class="bin" id="bin" tabindex="0" role="button">
-        <div class="fic">🗑️</div><div class="fname" style="font-weight:800;color:var(--navy)">Кошик</div>
+        <div class="fic">🗑️</div><div class="fname" style="font-weight:800;color:var(--ink)">Кошик</div>
         <div class="cnt" id="bincnt">порожній</div>
       </div>`;
     const pool=$("pool"), bin=$("bin"), t4=$("t4"), bincnt=$("bincnt");
@@ -389,7 +248,7 @@
         <div class="big">\uD83C\uDFC6</div>
         <h2>\u041b\u0430\u0434 \u043d\u0430\u0432\u0435\u0434\u0435\u043d\u043e!</h2>
         <div class="score">\u2B50 ${earned} / ${MAX} (помилок: ${mistakes})</div>
-        <div class="score" style="color:var(--good)">\u041e\u0446\u0456\u043d\u043a\u0430: ${grade} / 12</div>
+        <div class="score" style="color:var(--ok)">\u041e\u0446\u0456\u043d\u043a\u0430: ${grade} / 12</div>
         <p>${note}</p>
         ${canRetry ? '<button class="btn" id="again">\u0421\u043f\u0440\u043e\u0431\u0443\u0432\u0430\u0442\u0438 \u0449\u0435 \u0440\u0430\u0437 \u21BA</button>' : '<button class="btn ghost" id="home">\u0412\u0438\u0439\u0442\u0438 \u21A9</button>'}
       </div>`;

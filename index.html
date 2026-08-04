@@ -4,50 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Вхід — навчальні ігри</title>
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  :root{
-    --bg1:#dfe9f5;--bg2:#eef4fb;--surface:#fff;--border:#cfdcea;--border-2:#dce7f2;
-    --navy:#1b3a5c;--ink:#16232f;--dim:#5b7a99;--accent:#f2994a;--accent-strong:#e07f28;--bad:#ea6b6b;
-    --sans:"Segoe UI Rounded","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
-  }
-  @media (prefers-color-scheme:dark){:root{
-    --bg1:#0e1826;--bg2:#132133;--surface:#182a3e;--border:#2b4059;--border-2:#24384f;
-    --navy:#dbe7f3;--ink:#e7eef5;--dim:#9db1c6;--accent:#ffab5e;--accent-strong:#ffbe7f;--bad:#ff8a8a;
-  }}
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;font-family:var(--sans);color:var(--ink);
-    background:radial-gradient(1000px 640px at 50% -10%,var(--bg2),var(--bg1));
-    display:grid;place-items:center;padding:18px}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:22px;max-width:380px;width:100%;
-    padding:28px 24px;box-shadow:0 24px 60px -34px rgba(0,0,0,.5);text-align:center}
-  .bot{font-size:46px}
-  h1{color:var(--navy);font-size:22px;margin:8px 0 2px}
-  p.lede{color:var(--dim);font-size:14px;margin:0 0 18px}
-  input{width:100%;font-family:inherit;font-size:22px;font-weight:800;letter-spacing:4px;text-align:center;text-transform:uppercase;
-    padding:14px;border:2px solid var(--border);border-radius:14px;background:var(--bg2);color:var(--ink);margin-bottom:14px}
-  input:focus{outline:none;border-color:var(--accent)}
-  button{width:100%;cursor:pointer;font-family:inherit;font-weight:800;font-size:17px;padding:14px;border:0;border-radius:999px;
-    background:var(--accent);color:#3a2202;box-shadow:0 5px 0 var(--accent-strong)}
-  button:active{transform:translateY(3px);box-shadow:0 2px 0 var(--accent-strong)}
-  .msg{min-height:20px;margin-top:12px;font-size:14px;color:var(--bad);font-weight:600}
-  .msg.ok{color:var(--navy)}
-
-  /* ── блок «немає коду?» → демо. Другорядний: головна дія лишається вхід за кодом ── */
-  .sep{display:flex;align-items:center;gap:10px;margin:24px 0 12px;
-    color:var(--dim);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-  .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--border-2)}
-  .demo-lede{color:var(--dim);font-size:13px;line-height:1.5;margin:0 0 14px;text-align:left}
-  .demo-lede b{color:var(--navy)}
-  .btn-ghost{display:block;text-decoration:none;font-family:inherit;font-weight:800;font-size:15px;
-    padding:12px;border-radius:999px;background:transparent;color:var(--navy);
-    border:2px solid var(--border);box-shadow:0 4px 0 var(--border-2);transition:border-color .15s}
-  .btn-ghost:hover{border-color:var(--accent)}
-  .btn-ghost:active{transform:translateY(3px);box-shadow:0 1px 0 var(--border-2)}
-  .btn-ghost:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-
-  footer{margin-top:16px; max-width:380px; text-align:center;
-    color:var(--dim); font-size:12px; line-height:1.55}
-  footer b{color:var(--navy); font-weight:800}
+  /* тільки те, що є лише на сторінці входу */
+  body{display:grid; place-items:center; padding:var(--s5) var(--s4)}
+  .card{width:100%; max-width:400px; padding:var(--s6) var(--s5); text-align:center}
+  h1{font-size:var(--fs-hero); margin-bottom:var(--s2)}
+  .lede{color:var(--ink-2); font-size:var(--fs-sm); margin-bottom:var(--s5)}
+  .btn{width:100%; margin-top:var(--s3)}
+  .msg{min-height:22px; margin-top:var(--s3); color:var(--bad);
+    font-size:var(--fs-sm); font-weight:650}
+  .msg.ok{color:var(--ok)}
+  /* блок «немає коду?» → демо. Другорядний: головна дія лишається вхід за кодом */
+  .demo-lede{margin:0 0 var(--s4); text-align:left;
+    color:var(--ink-2); font-size:var(--fs-sm); line-height:1.5}
+  .demo-lede b{color:var(--ink); font-weight:650}
+  footer{max-width:400px; margin-top:var(--s4)}
 </style>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" data-head-v1>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -67,23 +39,23 @@
 </head>
 <body>
   <div class="card">
-    <div class="bot">🎮</div>
+    <div class="mark" aria-hidden="true">🎮</div>
     <h1>Навчальні ігри</h1>
     <p class="lede">Введи код, який дав вчитель — і відкриється твоя гра.</p>
-    <input id="code" placeholder="КОД" autocomplete="off" maxlength="8" inputmode="latin">
-    <button id="go">Увійти →</button>
+    <input id="code" class="field" placeholder="КОД" autocomplete="off" maxlength="8" inputmode="latin">
+    <button class="btn" id="go">Увійти →</button>
     <div id="msg" class="msg"></div>
 
-    <div class="sep"><span>ще немає коду?</span></div>
+    <div class="divider"><span>ще немає коду?</span></div>
     <p class="demo-lede">Тут можна побачити, як усе працює, <b>не витрачаючи жодної спроби</b>:
       три коротенькі раунди, оцінка за тією самою шкалою — і <b>нічого не зберігається</b>.
       Ідеально, щоб спокійно розібратися перед справжньою грою.</p>
-    <a class="btn-ghost" href="demo.html">Спробувати демо →</a>
+    <a class="btn ghost" href="demo.html">Спробувати демо →</a>
   </div>
 
   <footer data-sig>
-    © 2025–2026 <b>Процюк О. К.</b> · вчитель інформатики<br>
-    Комунальний заклад «Харківський ліцей № 47 Харківської міської ради»
+    © 2025–2026 <b>Процюк О. К.</b> · вчитель інформатики<br>
+    Комунальний заклад «Харківський ліцей № 47 Харківської міської ради»
   </footer>
 
 <script src="supabase-config.js"></script>
