@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прототип дизайну — сайт навчальних ігор</title>
+<meta name="robots" content="noindex">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   ТОКЕНИ. Один шар змінних — щоб потім розкотити на 11 файлів
+   без «підганяння на місці».
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  /* Шрифт: БЕЗ зовнішніх запитів. На Windows дає Segoe UI Variable,
+     на Mac — SF Pro. Ніякого стрибка тексту на слабкому інтернеті. */
+  --font:"Segoe UI Variable Display","Segoe UI Variable Text",system-ui,
+         -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace;
+
+  /* Розміри — плавні, без стрибків між телефоном і ноутбуком */
+  --fs-hero:clamp(25px,5.2vw,34px);
+  --fs-h2:clamp(18px,3.4vw,22px);
+  --fs-body:clamp(15px,2.5vw,16px);
+  --fs-sm:13.5px;
+  --fs-xs:12px;
+
+  /* Простір: крок 4. Один ритм на весь сайт */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:44px;
+
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-full:999px;
+
+  /* Нейтралі: 3 рівні тексту замість колишніх 2 */
+  --bg:#f6f7f9;
+  --bg-2:#ffffff;
+  --surface:#ffffff;
+  --surface-2:#f9fafb;
+  --line:#e7eaef;          /* волосяна межа */
+  --line-2:#d6dbe3;        /* активна межа */
+  --ink:#0f172a;           /* головний текст */
+  --ink-2:#4a5568;         /* другорядний */
+  --ink-3:#8b95a7;         /* підписи, футер */
+
+  /* Акценти: оранжевий — ТІЛЬКИ головна дія і прогрес */
+  --brand:#2f6fe0;
+  --brand-ring:color-mix(in srgb,var(--brand) 18%,transparent);
+  --accent:#e2590c;
+  --accent-2:#c74a06;
+  --accent-soft:#fff3ec;
+  --ok:#0f9d68; --ok-soft:#eefbf4; --ok-line:#a7e3c6;
+  --bad:#d92d20; --bad-soft:#fef4f3; --bad-line:#f3b5b0;
+  --star:#eaa207;
+
+  --sh1:0 1px 2px rgba(15,23,42,.05);
+  --sh2:0 4px 14px -6px rgba(15,23,42,.14), 0 1px 3px rgba(15,23,42,.05);
+  --sh3:0 18px 40px -20px rgba(15,23,42,.28);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0a0c11; --bg-2:#0f1218; --surface:#14181f; --surface-2:#191e27;
+  --line:#242b36; --line-2:#333c4a;
+  --ink:#e8ecf3; --ink-2:#a6b0c0; --ink-3:#727d8e;
+  --brand:#5b93f5; --accent:#ff8b4d; --accent-2:#ffa470; --accent-soft:#2a1a10;
+  --ok:#3ed597; --ok-soft:#0e2a20; --ok-line:#1f5943;
+  --bad:#ff7a70; --bad-soft:#2c1513; --bad-line:#6b2a25;
+  --star:#f5c34b;
+  --sh1:0 1px 2px rgba(0,0,0,.4);
+  --sh2:0 4px 16px -6px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.4);
+  --sh3:0 18px 44px -20px rgba(0,0,0,.75);
+}}
+:root[data-theme="light"]{
+  --bg:#f6f7f9;--bg-2:#fff;--surface:#fff;--surface-2:#f9fafb;--line:#e7eaef;--line-2:#d6dbe3;
+  --ink:#0f172a;--ink-2:#4a5568;--ink-3:#8b95a7;--brand:#2f6fe0;--accent:#e2590c;--accent-2:#c74a06;
+  --accent-soft:#fff3ec;--ok:#0f9d68;--ok-soft:#eefbf4;--ok-line:#a7e3c6;--bad:#d92d20;
+  --bad-soft:#fef4f3;--bad-line:#f3b5b0;--star:#eaa207;
+  --sh1:0 1px 2px rgba(15,23,42,.05);
+  --sh2:0 4px 14px -6px rgba(15,23,42,.14), 0 1px 3px rgba(15,23,42,.05);
+  --sh3:0 18px 40px -20px rgba(15,23,42,.28);
+}
+:root[data-theme="dark"]{
+  --bg:#0a0c11;--bg-2:#0f1218;--surface:#14181f;--surface-2:#191e27;--line:#242b36;--line-2:#333c4a;
+  --ink:#e8ecf3;--ink-2:#a6b0c0;--ink-3:#727d8e;--brand:#5b93f5;--accent:#ff8b4d;--accent-2:#ffa470;
+  --accent-soft:#2a1a10;--ok:#3ed597;--ok-soft:#0e2a20;--ok-line:#1f5943;--bad:#ff7a70;
+  --bad-soft:#2c1513;--bad-line:#6b2a25;--star:#f5c34b;
+  --sh1:0 1px 2px rgba(0,0,0,.4);
+  --sh2:0 4px 16px -6px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.4);
+  --sh3:0 18px 44px -20px rgba(0,0,0,.75);
+}
+
+/* ══════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh; font-family:var(--font); color:var(--ink);
+  font-size:var(--fs-body); line-height:1.55;
+  background:var(--bg);
+  /* один делікатний градієнт згори — замість великої барвистої плями */
+  background-image:linear-gradient(180deg,var(--bg-2) 0%,var(--bg) 320px);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  padding:var(--s5) var(--s4) var(--s7);
+}
+h1,h2,h3{margin:0; letter-spacing:-.021em; line-height:1.2; font-weight:650}
+p{margin:0}
+button,input{font-family:inherit;font-size:inherit;color:inherit}
+
+/* ── службова обгортка прототипу (у справжніх файлах цього не буде) ── */
+.lab{max-width:940px;margin:0 auto}
+.labhead{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)}
+.badge{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
+  padding:5px 10px;border-radius:var(--r-full)}
+.labhead h1{font-size:var(--fs-h2)}
+.labhead .grow{flex:1}
+.seg{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-full);padding:3px}
+.seg button{cursor:pointer;border:0;background:transparent;color:var(--ink-2);font-size:var(--fs-xs);font-weight:650;
+  padding:7px 12px;border-radius:var(--r-full);transition:background .15s,color .15s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh1)}
+.seg button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+
+.sectlabel{display:flex;align-items:center;gap:var(--s3);margin:var(--s6) 0 var(--s3);
+  color:var(--ink-3);font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.sectlabel::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ══════════════ КАРТКА ══════════════ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--sh2);overflow:hidden}
+.card-pad{padding:var(--s6) var(--s5)}
+@media (min-width:560px){.card-pad{padding:var(--s6)}}
+
+/* ══════════════ ВХІД ══════════════ */
+.login{max-width:400px;margin:0 auto;text-align:center}
+.mark{width:44px;height:44px;margin:0 auto var(--s4);border-radius:var(--r-md);
+  display:grid;place-items:center;font-size:22px;
+  background:var(--surface-2);border:1px solid var(--line)}
+.login h2{font-size:var(--fs-hero);margin-bottom:var(--s2)}
+.lede{color:var(--ink-2);font-size:var(--fs-sm);margin-bottom:var(--s5)}
+
+.field{width:100%;padding:15px var(--s4);border:1px solid var(--line-2);border-radius:var(--r-md);
+  background:var(--surface-2);color:var(--ink);
+  font-size:24px;font-weight:700;letter-spacing:.22em;text-align:center;text-transform:uppercase;
+  transition:border-color .15s,box-shadow .15s,background .15s}
+.field::placeholder{color:var(--ink-3);font-weight:600;letter-spacing:.18em}
+.field:focus{outline:none;border-color:var(--brand);background:var(--surface);
+  box-shadow:0 0 0 4px var(--brand-ring)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  width:100%;min-height:48px;padding:0 var(--s5);margin-top:var(--s3);
+  cursor:pointer;border:1px solid transparent;border-radius:var(--r-full);
+  font-size:var(--fs-body);font-weight:650;letter-spacing:-.005em;
+  background:var(--accent);color:#fff;box-shadow:var(--sh1);
+  transition:background .15s,transform .08s,box-shadow .15s}
+.btn:hover{background:var(--accent-2)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line-2);box-shadow:none}
+.btn.ghost:hover{background:var(--surface-2);border-color:var(--line-2)}
+.btn.quiet{background:transparent;color:var(--ink-2);border-color:transparent;box-shadow:none;
+  min-height:40px;font-weight:600;font-size:var(--fs-sm)}
+.btn.quiet:hover{color:var(--ink);background:var(--surface-2)}
+.btn-row{display:flex;gap:var(--s3)}
+.btn-row .btn{margin-top:0}
+
+.divider{display:flex;align-items:center;gap:var(--s3);margin:var(--s5) 0 var(--s4);
+  color:var(--ink-3);font-size:var(--fs-xs);font-weight:650}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.sig{margin-top:var(--s5);color:var(--ink-3);font-size:var(--fs-xs);line-height:1.5;text-align:center}
+.sig b{color:var(--ink-2);font-weight:650}
+
+/* ══════════════ ШАПКА ГРИ ══════════════ */
+.gtop{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s3)}
+.gtitle{font-size:var(--fs-h2);font-weight:650;letter-spacing:-.02em}
+.gtop .grow{flex:1}
+.stars{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-full);
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh1);
+  font-size:var(--fs-sm);font-weight:700;font-variant-numeric:tabular-nums}
+.stars .n{color:var(--ink)}
+.stars .ic{color:var(--star)}
+
+/* прогрес: сегменти замість точок — видно, скільки раундів усього */
+.prog{display:flex;gap:5px;margin-bottom:var(--s5)}
+.prog i{flex:1;height:5px;border-radius:var(--r-full);background:var(--line);
+  transition:background .3s}
+.prog i.on{background:var(--accent)}
+.prog i.done{background:var(--ok)}
+.progmeta{display:flex;justify-content:space-between;color:var(--ink-3);
+  font-size:var(--fs-xs);font-weight:650;margin-bottom:var(--s2)}
+
+/* підказка: акцентна смуга ліворуч замість «бульбашки з хвостиком» */
+.hint{display:flex;gap:var(--s3);padding:var(--s3) var(--s4);margin-bottom:var(--s5);
+  background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:var(--r-sm);color:var(--ink-2);font-size:var(--fs-sm)}
+.hint b{color:var(--ink);font-weight:650}
+.hint.good{border-left-color:var(--ok);background:var(--ok-soft);border-color:var(--ok-line)}
+.hint.warn{border-left-color:var(--bad);background:var(--bad-soft);border-color:var(--bad-line)}
+
+.task{font-size:var(--fs-h2);font-weight:650;margin-bottom:var(--s5);letter-spacing:-.018em;
+  text-wrap:balance}
+
+/* ══════════════ ПЛИТКИ ══════════════ */
+.tiles{display:grid;gap:var(--s3);grid-template-columns:1fr}
+@media (min-width:620px){.tiles.two{grid-template-columns:1fr 1fr}}
+.tile{display:flex;align-items:center;gap:var(--s3);width:100%;
+  min-height:52px;padding:var(--s3) var(--s4);cursor:pointer;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  color:var(--ink);font-size:var(--fs-sm);font-weight:550;line-height:1.4;
+  box-shadow:var(--sh1);
+  transition:border-color .15s,box-shadow .15s,transform .12s,background .15s;
+  animation:rise .34s cubic-bezier(.2,.7,.3,1) both;
+  animation-delay:calc(var(--i,0) * 45ms)}
+.tile .ic{flex:none;font-size:19px;line-height:1;width:22px;text-align:center}
+.tile:hover{border-color:var(--line-2);box-shadow:var(--sh2);transform:translateY(-1px)}
+.tile:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.tile.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--sh2)}
+.tile.ok{border-color:var(--ok-line);background:var(--ok-soft);color:var(--ink)}
+.tile.ok .ic{color:var(--ok)}
+.tile.err{border-color:var(--bad-line);background:var(--bad-soft);animation:nudge .3s}
+.tile.gone{opacity:0;transform:scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
+.tile .tag{margin-left:auto;flex:none;font-size:var(--fs-xs);font-weight:700;
+  color:var(--ok);background:var(--surface);border:1px solid var(--ok-line);
+  padding:2px 8px;border-radius:var(--r-full)}
+
+/* цілі («папки») */
+.targets{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:var(--s4)}
+.target{padding:var(--s4) var(--s3);cursor:pointer;text-align:center;
+  background:var(--surface-2);border:1.5px dashed var(--line-2);border-radius:var(--r-lg);
+  transition:border-color .15s,background .15s,transform .12s}
+.target:hover{border-color:var(--accent);background:var(--surface)}
+.target:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.target .tic{font-size:26px;line-height:1}
+.target .tname{margin-top:6px;font-size:var(--fs-sm);font-weight:650}
+.target .tcnt{margin-top:2px;color:var(--ink-3);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.target.hit{animation:pop .3s;border-style:solid;border-color:var(--ok-line);background:var(--ok-soft)}
+.target.nope{animation:nudge .3s}
+
+/* ══════════════ ЧИСЛОВИЙ РАУНД ══════════════ */
+.qbox{padding:var(--s5);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg)}
+.qnum{color:var(--ink-3);font-size:var(--fs-xs);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.qtext{margin:var(--s3) 0 var(--s5);font-size:clamp(16px,3vw,19px);line-height:1.45}
+.qtext code{font-family:var(--mono);font-size:.94em;background:var(--surface);
+  border:1px solid var(--line);border-radius:7px;padding:2px 6px}
+.qrow{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.numin{width:150px;min-height:48px;padding:0 var(--s4);text-align:center;
+  font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-md);color:var(--ink);
+  transition:border-color .15s,box-shadow .15s}
+.numin:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-ring)}
+.qrow .btn{width:auto;margin-top:0;flex:0 0 auto}
+.unit{color:var(--ink-2);font-size:var(--fs-sm);font-weight:650}
+.verdict{margin-top:var(--s4);min-height:22px;color:var(--ink-2);font-size:var(--fs-sm)}
+.verdict b.y{color:var(--ok)} .verdict b.n{color:var(--bad)}
+
+/* ══════════════ ФІНАЛ ══════════════ */
+.fin{text-align:center;padding:var(--s6) var(--s4)}
+.grade{font-size:clamp(56px,15vw,84px);font-weight:700;line-height:1;letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.grade small{font-size:.34em;font-weight:650;color:var(--ink-3);letter-spacing:0}
+.finlabel{margin-top:var(--s2);color:var(--ink-2);font-size:var(--fs-sm);font-weight:650}
+.chips{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;margin:var(--s5) 0}
+.chip{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-full);
+  background:var(--surface-2);border:1px solid var(--line);
+  font-size:var(--fs-xs);font-weight:650;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.chip b{color:var(--ink)}
+.note{max-width:420px;margin:0 auto;color:var(--ink-3);font-size:var(--fs-xs);line-height:1.55}
+.fin .btn-row{max-width:340px;margin:var(--s5) auto 0}
+
+/* ══════════════ АНІМАЦІЇ ══════════════ */
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@keyframes pop{50%{transform:scale(1.04)}}
+@keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+
+/* ══════════════ ПАНЕЛЬ «ЩО ЗМІНИЛОСЯ» ══════════════ */
+.notes{margin-top:var(--s6)}
+.notes summary{cursor:pointer;font-weight:650;color:var(--ink);padding:var(--s3) 0}
+.notes ul{margin:var(--s2) 0 0;padding-left:var(--s5);color:var(--ink-2);font-size:var(--fs-sm)}
+.notes li{margin-bottom:7px}
+.notes b{color:var(--ink)}
+.cmp{display:grid;gap:var(--s3);grid-template-columns:1fr;margin-top:var(--s3)}
+@media (min-width:620px){.cmp{grid-template-columns:1fr 1fr}}
+.cmp div{padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);
+  font-size:var(--fs-sm);color:var(--ink-2)}
+.cmp .h{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="lab">
+
+  <div class="labhead">
+    <span class="badge">прототип</span>
+    <h1>Спокійний мінімалізм</h1>
+    <span class="grow"></span>
+    <div class="seg" role="group" aria-label="Тема">
+      <button data-theme-btn="light" aria-pressed="false">Світла</button>
+      <button data-theme-btn="auto"  aria-pressed="true">Авто</button>
+      <button data-theme-btn="dark"  aria-pressed="false">Темна</button>
+    </div>
+  </div>
+
+  <!-- ══════════ 1. ВХІД ══════════ -->
+  <div class="sectlabel">1 · Вхід за кодом</div>
+  <div class="card card-pad login">
+    <div class="mark" aria-hidden="true">🎮</div>
+    <h2>Навчальні ігри</h2>
+    <p class="lede">Введи код, який дав вчитель — і відкриється твоя гра.</p>
+    <input class="field" id="code" placeholder="КОД" maxlength="8" autocomplete="off" aria-label="Код">
+    <button class="btn" id="enter">Увійти →</button>
+
+    <div class="divider">ще немає коду?</div>
+    <p class="lede" style="text-align:left;margin-bottom:var(--s4)">
+      Тут можна побачити, як усе працює, <b>не витрачаючи жодної спроби</b>: три коротенькі
+      раунди, оцінка за тією самою шкалою — і нічого не зберігається.</p>
+    <button class="btn ghost">Спробувати демо →</button>
+
+    <div class="sig">
+      © 2025–2026 <b>Процюк О. К.</b> · вчитель інформатики<br>
+      Комунальний заклад «Харківський ліцей № 47 Харківської міської ради»
+    </div>
+  </div>
+
+  <!-- ══════════ 2. РАУНД «ПОЗНАЧ ПРАВИЛЬНІ» ══════════ -->
+  <div class="sectlabel">2 · Раунд «познач правильні»</div>
+  <div class="card card-pad">
+    <div class="gtop">
+      <span class="gtitle">Алгоритми та програми</span>
+      <span class="grow"></span>
+      <span class="stars"><span class="ic">★</span><span class="n" id="st1">4</span></span>
+    </div>
+    <div class="progmeta"><span>Раунд 2 з 5</span><span>ГР 2</span></div>
+    <div class="prog"><i class="done"></i><i class="on"></i><i></i><i></i><i></i></div>
+
+    <div class="hint" id="h1"><span>💡</span><span>Правильних — <b>чотири</b>. Три інші звучать
+      переконливо, але неправильні.</span></div>
+
+    <p class="task">Познач ЧОТИРИ правильні твердження про логіку в пошуку</p>
+    <div class="tiles" id="pick"></div>
+  </div>
+
+  <!-- ══════════ 3. РАУНД «РОЗКЛАДИ» ══════════ -->
+  <div class="sectlabel">3 · Раунд «розклади по групах»</div>
+  <div class="card card-pad">
+    <div class="hint"><span>💡</span><span>Спершу торкнись <b>картки</b>, потім групи.
+      Правило: дві окремі ділянки — <b>or</b>, один проміжок — <b>and</b>.</span></div>
+    <p class="task">Яку логічну операцію поставити в умову?</p>
+    <div class="tiles" id="sortpool"></div>
+    <div class="targets" id="sorttargets"></div>
+  </div>
+
+  <!-- ══════════ 4. ЧИСЛОВИЙ РАУНД ══════════ -->
+  <div class="sectlabel">4 · Раунд із числовою відповіддю</div>
+  <div class="card card-pad">
+    <div class="qbox">
+      <div class="qnum">Завдання 1 з 4</div>
+      <p class="qtext">Проєкт рахує так: <code>if x &lt; -3 or x &gt; 5: y = 2*x - 12</code>,
+        а <code>else: y = 7 - 8*x</code>.<br>Уводимо <b>x = −3</b>. Яке <b>y</b> покаже проєкт?</p>
+      <div class="qrow">
+        <input class="numin" id="num" placeholder="?" inputmode="text" autocomplete="off" aria-label="Відповідь">
+        <button class="btn" id="chk">Перевірити</button>
+      </div>
+      <div class="verdict" id="vd">Уведи число й натисни «Перевірити» (або Enter).</div>
+    </div>
+  </div>
+
+  <!-- ══════════ 5. ФІНАЛ ══════════ -->
+  <div class="sectlabel">5 · Фінал</div>
+  <div class="card">
+    <div class="fin">
+      <div class="grade"><span id="gr">0</span><small> / 12</small></div>
+      <div class="finlabel">Оцінка за гру</div>
+      <div class="chips">
+        <span class="chip">★ <b>23</b> / 26</span>
+        <span class="chip">помилок: <b>3</b></span>
+        <span class="chip">спроба <b>1</b> з 2</span>
+      </div>
+      <p class="note">Це <b>перша</b> частина роботи. Друга — твій власний проєкт за одинадцятьма
+        вимогами. Підсумковий бал — середнє двох частин, округлене вгору.</p>
+      <div class="btn-row">
+        <button class="btn ghost">Вийти ↩</button>
+        <button class="btn" id="again">Ще спроба ↺</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ нотатки ══════════ -->
+  <details class="notes" open>
+    <summary>Що саме змінилося проти нинішнього сайту</summary>
+    <ul>
+      <li><b>Типографіка</b> — вариативний системний шрифт, плавні розміри <code>clamp()</code>,
+        щільніші заголовки. Без зовнішніх запитів: нічого не «стрибає» на слабкому інтернеті.</li>
+      <li><b>Плитки — мінімум 52 px</b> висоти замість ~40. На телефоні в них нарешті легко влучити.</li>
+      <li><b>Прогрес — сегменти замість точок.</b> Одразу видно, скільки раундів усього
+        і скільком уже закрито.</li>
+      <li><b>Підказка — смуга акценту ліворуч</b> замість «бульбашки з хвостиком».
+        Менше декору, більше читабельності; є три стани: звичайний, правильно, помилка.</li>
+      <li><b>Кнопка — без «3D-підкладки».</b> Тонка тінь і зсув на 1 px при натисканні.
+        Оранжевий тепер тільки на <b>головній</b> дії та прогресі.</li>
+      <li><b>Тіні у три рівні</b> замість однієї важкої; межі — волосяні 1 px.</li>
+      <li><b>Три рівні тексту</b> (головний / другорядний / підписи) замість двох —
+        видно ієрархію без збільшення кольорів.</li>
+      <li><b>Числа — табличні цифри.</b> Бал і зірочки не «стрибають» при зміні.</li>
+      <li><b>Плитки з’являються каскадом</b> (45 мс одна за одною) — рух є, але не заважає.</li>
+      <li><b>Фокус видно всюди</b> (<code>:focus-visible</code>) — сайтом можна користуватися
+        з клавіатури.</li>
+      <li><b>Темна тема — справжня темна</b> (#0a0c11), а не синювата. Ручний перемикач угорі.</li>
+      <li><b>Уся анімація вимикається</b> при <code>prefers-reduced-motion</code>.</li>
+    </ul>
+    <div class="cmp">
+      <div><div class="h">лишилося як було</div>
+        синьо-оранжева гама · темна тема · механіки раундів · зірочки за правильні дії ·
+        підпис автора у футері</div>
+      <div><div class="h">свідомо НЕ брав</div>
+        скло/<code>backdrop-filter</code> (гальмує на слабких телефонах) · рухомий градієнтний фон ·
+        зовнішні шрифти · неон (погано для довгого читання завдань)</div>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  /* ── тема ── */
+  const root = document.documentElement;
+  const setTheme = v => {
+    if(v === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', v);
+    document.querySelectorAll('[data-theme-btn]').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.themeBtn === v)));
+  };
+  document.querySelectorAll('[data-theme-btn]').forEach(b =>
+    b.onclick = () => setTheme(b.dataset.themeBtn));
+
+  /* ── 1. вхід ── */
+  $('enter').onclick = () => {
+    const v = $('code').value.trim();
+    $('code').style.borderColor = v.length >= 3 ? 'var(--ok)' : 'var(--bad)';
+  };
+
+  /* ── 2. «познач правильні» ── */
+  const PICK = [
+    {n:"Галочки в межах ОДНОГО фільтра з’єднані через or — результатів більше", ic:"✅", ok:true},
+    {n:"РІЗНІ фільтри з’єднані через and — результатів менше", ic:"✅", ok:true},
+    {n:"«Нічого не знайдено» найчастіше значить, що умова занадто сувора", ic:"✅", ok:true},
+    {n:"У пошуку OR потрібно писати ВЕЛИКИМИ літерами", ic:"✅", ok:true},
+    {n:"Чим більше галочок поставиш, тим більше знайдеш", ic:"❓", ok:false,
+     s:"залежить, <b>де</b> галочка: у межах одного фільтра — більше, а новий фільтр — менше"},
+    {n:"Мінус перед словом у пошуку розширює пошук", ic:"❓", ok:false,
+     s:"навпаки: <code>-слово</code> — це <b>not</b>, воно виключає сторінки з цим словом"},
+    {n:"«Запам’ятати мене» на чужому компʼютері безпечно, якщо закрити вкладку", ic:"❓", ok:false,
+     s:"ні: ця логічна змінна лишається <b>True</b> і після тебе"}
+  ];
+  let stars = 4, found = 0;
+  const need = PICK.filter(x => x.ok).length;
+  const pool = $('pick');
+  PICK.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.className = 'tile'; b.style.setProperty('--i', i);
+    b.innerHTML = `<span class="ic">${it.ic}</span><span>${it.n}</span>`;
+    b.onclick = () => {
+      if(b.dataset.done) return;
+      if(it.ok){
+        b.classList.add('ok'); b.dataset.done = 1;
+        b.insertAdjacentHTML('beforeend', '<span class="tag">+1 ★</span>');
+        stars++; $('st1').textContent = stars; found++;
+        const h = $('h1');
+        h.className = 'hint good';
+        h.innerHTML = found === need
+          ? '<span>🎉</span><span>Раунд пройдено — усі чотири знайдено.</span>'
+          : `<span>✅</span><span>Так, правильно. Лишилось: <b>${need - found}</b>.</span>`;
+      } else {
+        b.classList.add('err'); setTimeout(() => b.classList.remove('err'), 340);
+        const h = $('h1');
+        h.className = 'hint warn';
+        h.innerHTML = `<span>⚠️</span><span>Ні — ${it.s}.</span>`;
+      }
+    };
+    pool.appendChild(b);
+  });
+
+  /* ── 3. «розклади по групах» ── */
+  const ITEMS = [
+    {n:"Бал неприпустимий: менший за 1 <b>або</b> більший за 12", ic:"🚫", f:"or"},
+    {n:"Температура небезпечна: нижче −20 <b>або</b> вище +35", ic:"🌡", f:"or"},
+    {n:"Вода підходить для купання: від 20 до 28 °C", ic:"🌊", f:"and"},
+    {n:"Трикутник існує: кожна сторона менша за суму двох інших", ic:"🔺", f:"and"}
+  ];
+  const GROUPS = [{k:"or", ic:"🔼", name:"or — диз’юнкція"}, {k:"and", ic:"🔽", name:"and — кон’юнкція"}];
+  let sel = null, left = ITEMS.length;
+  const sp = $('sortpool'), tg = $('sorttargets');
+  ITEMS.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.className = 'tile'; b.style.setProperty('--i', i);
+    b.innerHTML = `<span class="ic">${it.ic}</span><span>${it.n}</span>`;
+    b.onclick = () => {
+      if(b.classList.contains('gone')) return;
+      [...sp.children].forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel'); sel = {it, el:b};
+    };
+    sp.appendChild(b);
+  });
+  GROUPS.forEach(g => {
+    const d = document.createElement('div');
+    d.className = 'target'; d.tabIndex = 0; d.setAttribute('role', 'button');
+    d.innerHTML = `<div class="tic">${g.ic}</div><div class="tname">${g.name}</div><div class="tcnt">0</div>`;
+    let cnt = 0;
+    const act = () => {
+      if(!sel){ d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320); return; }
+      if(sel.it.f === g.k){
+        sel.el.classList.add('gone'); cnt++; d.querySelector('.tcnt').textContent = cnt;
+        d.classList.add('hit'); setTimeout(() => d.classList.remove('hit'), 320);
+        sel = null; left--;
+      } else {
+        d.classList.add('nope'); setTimeout(() => d.classList.remove('nope'), 320);
+      }
+    };
+    d.onclick = act;
+    d.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); act(); } };
+    tg.appendChild(d);
+  });
+
+  /* ── 4. числовий раунд ── */
+  const ANSWER = 31;
+  const check = () => {
+    const raw = ($('num').value || '').replace(/[\s ]/g, '').replace(',', '.').replace('−', '-');
+    const vd = $('vd');
+    if(raw === ''){ vd.textContent = 'Спочатку введи число.'; return; }
+    const val = Number(raw);
+    if(!isFinite(val)){ vd.textContent = 'Це не схоже на число. Спробуй ще.'; return; }
+    if(Math.abs(val - ANSWER) < 1e-6){
+      vd.innerHTML = '<b class="y">Правильно ✅</b> −3 <b>не менше</b> за −3, тому працює друга формула.';
+      $('num').style.borderColor = 'var(--ok)';
+    } else {
+      vd.innerHTML = '<b class="n">Ні.</b> Уважно: чи істинна умова <code>x &lt; -3</code> при x = −3? Межа належить <b>другій</b> гілці.';
+      $('num').style.borderColor = 'var(--bad)';
+    }
+  };
+  $('chk').onclick = check;
+  $('num').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); check(); } };
+
+  /* ── 5. фінал: плавний підрахунок балу ── */
+  const countUp = (to) => {
+    const el = $('gr');
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = to; return; }
+    let cur = 0;
+    const step = () => { cur++; el.textContent = cur; if(cur < to) setTimeout(step, 90); };
+    el.textContent = '0'; setTimeout(step, 250);
+  };
+  countUp(10);
+  $('again').onclick = () => countUp(10);
+})();
+</script>
+</body>
+</html>
