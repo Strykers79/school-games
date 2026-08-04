@@ -31,6 +31,19 @@
   button:active{transform:translateY(3px);box-shadow:0 2px 0 var(--accent-strong)}
   .msg{min-height:20px;margin-top:12px;font-size:14px;color:var(--bad);font-weight:600}
   .msg.ok{color:var(--navy)}
+
+  /* ── блок «немає коду?» → демо. Другорядний: головна дія лишається вхід за кодом ── */
+  .sep{display:flex;align-items:center;gap:10px;margin:24px 0 12px;
+    color:var(--dim);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--border-2)}
+  .demo-lede{color:var(--dim);font-size:13px;line-height:1.5;margin:0 0 14px;text-align:left}
+  .demo-lede b{color:var(--navy)}
+  .btn-ghost{display:block;text-decoration:none;font-family:inherit;font-weight:800;font-size:15px;
+    padding:12px;border-radius:999px;background:transparent;color:var(--navy);
+    border:2px solid var(--border);box-shadow:0 4px 0 var(--border-2);transition:border-color .15s}
+  .btn-ghost:hover{border-color:var(--accent)}
+  .btn-ghost:active{transform:translateY(3px);box-shadow:0 1px 0 var(--border-2)}
+  .btn-ghost:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -41,6 +54,12 @@
     <input id="code" placeholder="КОД" autocomplete="off" maxlength="8" inputmode="latin">
     <button id="go">Увійти →</button>
     <div id="msg" class="msg"></div>
+
+    <div class="sep"><span>ще немає коду?</span></div>
+    <p class="demo-lede">Тут можна побачити, як усе працює, <b>не витрачаючи жодної спроби</b>:
+      три коротенькі раунди, оцінка за тією самою шкалою — і <b>нічого не зберігається</b>.
+      Ідеально, щоб спокійно розібратися перед справжньою грою.</p>
+    <a class="btn-ghost" href="demo.html">Спробувати демо →</a>
   </div>
 
 <script src="supabase-config.js"></script>
