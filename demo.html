@@ -7,6 +7,7 @@
 <meta name="description" content="Демонстраційна гра: як працює сайт навчальних ігор — вхід за кодом, бал 1–12 на сервері, спроби, адмін-панель, експорт для Мрії.">
 <link rel="stylesheet" href="assets/site.css">
 <link rel="stylesheet" href="assets/game.css">
+<script src="assets/theme.js"></script>
 <style>
   /* тільки те, що є лише в демо */
   .actions{margin-top:0}
@@ -66,7 +67,7 @@
 
   <div class="card">
     <div class="head">
-      <div class="bit" aria-hidden="true" id="mascot">🤖</div>
+      <div class="bit bit-img" aria-hidden="true" id="mascot"><img src="bit.svg" alt="" width="56" height="56"></div>
       <div class="bubble" id="say">Привіт! Я робот <b>Біт</b>. Покажу за 3 хвилини, як працює цей сайт.</div>
     </div>
     <div class="stage" id="stage"></div>
@@ -88,6 +89,18 @@
   const $ = id => document.getElementById(id);
   const stage=$("stage"), say=$("say"), actions=$("actions"),
         starsEl=$("stars"), dotsEl=$("dots"), mascot=$("mascot");
+
+  // Біт — намальований svg (той самий файл, що в іграх 5-А), Байт — emoji.
+  // ⚠️ textContent тут не годиться: він стер би <img>.
+  const setMascot = kind => {
+    if(kind === "bit"){
+      mascot.classList.add("bit-img");
+      mascot.innerHTML = '<img src="bit.svg" alt="" width="56" height="56">';
+    } else {
+      mascot.classList.remove("bit-img");
+      mascot.textContent = "\uD83D\uDEF8";
+    }
+  };
 
   const MAX = 12;               // 4 + 4 + 4
   const TOTAL_ROUNDS = 3;
@@ -112,7 +125,7 @@
   // ═════════════════ ЕКРАН 1 — що це таке ═════════════════
   function screenIntro(){
     round = 0; paintDots(); dotsEl.style.visibility = "hidden";
-    mascot.textContent = "🤖";
+    setMascot("bit");
     bit("Привіт! Я робот <b>Біт</b>. Покажу за 3 хвилини, як працює цей сайт.");
     stage.innerHTML = `
       <div class="intro">
@@ -252,7 +265,7 @@
 
   // ═════════════════ Раунди демо ═════════════════
   function round1(){
-    mascot.textContent = "🤖";
+    setMascot("bit");
     sortRound({
       task: "Цифровий пристрій чи ні? 🔢",
       hint: "Механіка перша: <b>розкласти по папках</b>. Спершу картка, потім папка.",
@@ -269,7 +282,7 @@
   }
 
   function round2(){
-    mascot.textContent = "🛸";
+    setMascot("bait");
     pickRound({
       task: "Що робить пароль надійним? 🔐",
       hint: "Механіка друга: <b>познач правильні</b>. Тепер веду я — дрон <b>Байт</b> (у кожного класу свій персонаж).",
@@ -287,7 +300,7 @@
   }
 
   function round3(){
-    mascot.textContent = "🛸";
+    setMascot("bait");
     orderRound({
       task: "Розстав одиниці від найменшої до найбільшої 1 → 4",
       hint: "Механіка третя: <b>розставити по порядку</b>. Натискай від найменшої одиниці.",
@@ -307,7 +320,7 @@
     const earned = Math.max(0, MAX - mistakes);
     const pct = Math.round(100 * earned / MAX);
     const grade = pctToGrade(pct);
-    mascot.textContent = "🛸";
+    setMascot("bait");
     bit("Готово! Ось що учень бачить у кінці гри 🎉");
     stage.innerHTML = `
       <div class="win">
@@ -329,7 +342,7 @@
   // ═════════════════ ЕКРАН — можливості ═════════════════
   function screenFeatures(fromIntro){
     dotsEl.style.visibility = "hidden";
-    mascot.textContent = "🤖";
+    setMascot("bit");
     bit("А тепер — коротко про те, <b>що вміє сайт</b>.");
     stage.innerHTML = `
       <div class="intro">

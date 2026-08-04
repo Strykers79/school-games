@@ -5,18 +5,23 @@
    Підключають: index.html, demo.html, admin.html, games/*.html
    Ігри беруть іще assets/game.css (оболонка гри й раунди).
 
-   ⚠️ ТЕМА АВТОМАТИЧНА: слухає системну настройку користувача.
-      Перемикача в інтерфейсі поки немає — тому блоків [data-theme] тут
-      теж немає. Мертвий код, який треба тримати синхронно, гірший за
-      відсутній: коли зʼявиться перемикач, блоки допишемо разом із ним.
+   ⚠️ ТЕМА: три стани — авто / світла / темна, кнопка в assets/theme.js.
+      Тут немає жодного @media (prefers-color-scheme) І ЦЕ НАВМИСНО:
+      «авто» розбирає сам js — він читає системну настройку й проставляє
+      html[data-theme="light"|"dark"] конкретним значенням. Завдяки цьому
+      світла палітра описана ОДИН раз, а не двічі (у media-запиті й у
+      блоці атрибута), і копії не можуть розійтися.
+      ⚠️ Наслідок: без js сторінка отримає темну гаму. Це прийнятно —
+      без js тут не працює ні вхід за кодом, ні сама гра.
 
    ⚠️ РІЗНИЦЯ ТЕМ ЗІБРАНА В ТОКЕНАХ (--btn-grad, --plume-opacity тощо),
       а не в дублях правил. Тому компоненти нижче написані ОДИН раз.
       Додаєш колір — правиш два блоки токенів, і все.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── ТОКЕНИ · темна гама (за замовчуванням) ──────────────────────────── */
+/* ─── ТОКЕНИ · темна гама (база) ──────────────────────────────────────── */
 :root{
+  color-scheme:dark;   /* щоб смуги прокрутки й списки <select> були в тон */
   --font:"Segoe UI Variable Display","Segoe UI Variable Text",system-ui,
          -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace;
@@ -63,8 +68,11 @@
    Та сама гама (оранж → рожевий → фіалковий), але:
    ⚠️ світіння прибрано — на білому воно читається як брудна пляма;
    ⚠️ кольори глибші, бо неон на білому не має контрасту.
+   Спрацьовує, коли theme.js проставив data-theme="light" — і за вибором
+   «світла», і за «авто», якщо в системі світла тема.
    ──────────────────────────────────────────────────────────────────────── */
-@media (prefers-color-scheme:light){:root{
+:root[data-theme="light"]{
+  color-scheme:light;
   --bg:#faf9ff; --bg-2:#ffffff;
   --surface:#ffffff; --surface-2:#f7f6fd;
   --line:#e8e6f4; --line-2:#d3d0e6;
@@ -89,7 +97,7 @@
   --btn-shadow:0 10px 24px -12px rgba(224,53,111,.5);
   --title-grad:linear-gradient(135deg,#e2560c,#d62e6b 55%,#6244e8);
   --glow-on:none;
-}}
+}
 
 /* ─── БАЗА ────────────────────────────────────────────────────────────── */
 *{box-sizing:border-box}
@@ -171,6 +179,20 @@ button,input,select,textarea{font-family:inherit; font-size:inherit; color:inher
   color:var(--ink-3); font-size:var(--fs-xs); font-weight:650;
 }
 .divider::before,.divider::after{content:""; flex:1; height:1px; background:var(--line)}
+
+/* ─── КНОПКА ТЕМИ ─────────────────────────────────────────────────────────
+   Розмітку не додаємо в 12 файлів — кнопку створює assets/theme.js:
+   у шапку .top, де вона є (демо й ігри), інакше в куток екрана. */
+.themebtn{
+  flex:none; display:grid; place-items:center; width:36px; height:36px; padding:0;
+  cursor:pointer; border-radius:var(--r-full); color:var(--ink-2);
+  background:var(--surface); border:1px solid var(--line); box-shadow:var(--sh1);
+  transition:color .15s, border-color .15s, background .15s;
+}
+.themebtn:hover{color:var(--ink); border-color:var(--line-2); background:var(--surface-2)}
+.themebtn:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.themebtn svg{display:block; width:18px; height:18px}
+.themebtn-fixed{position:fixed; top:var(--s4); right:var(--s4); z-index:6}
 
 footer{text-align:center; color:var(--ink-3); font-size:var(--fs-xs); line-height:1.55}
 footer .sig,.sig{display:block; margin-top:var(--s1)}

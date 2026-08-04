@@ -5,10 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Адмінка — ігри</title>
 <link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
 <style>
   /* тільки те, що є лише в адмінці */
   body{padding:var(--s5) var(--s4) var(--s7)}
   .wrap{max-width:940px; margin:0 auto}
+  /* ⚠️ кнопку теми theme.js ставить у правий кут екрана (шапки .top тут немає).
+     Поки вікно ширше за .wrap, вона висить у вільному полі. Щойно вужче —
+     впритул до кнопки «Вийти», тому віддаємо їй власну смугу зверху. */
+  @media (max-width:980px){ body{padding-top:calc(var(--s5) + 40px)} }
   h1{font-size:var(--fs-h2)}
   .row{display:flex; gap:var(--s2); align-items:center; flex-wrap:wrap}
   .between{justify-content:space-between}
